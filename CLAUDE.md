@@ -1,17 +1,38 @@
 # php-result
 
-PHP 8.2+ 向けの型安全な Result 型ライブラリ（PHPStan対応）
+Type-safe Result type library for PHP 8.2+ with PHPStan support.
 
-## コマンド
+## Commands
 
 ```bash
-composer test           # Pest テスト実行
-composer test:coverage  # カバレッジ付きテスト（100%必須）
-composer analyse        # PHPStan 静的解析
-composer cs-check       # コードスタイルチェック
-composer cs-fix         # コードスタイル自動修正
+composer test           # Run Pest tests
+composer test:coverage  # Run tests with coverage (100% required)
+composer analyse        # Run PHPStan static analysis
+composer cs-check       # Check code style
+composer cs-fix         # Fix code style
 ```
 
-## コーディングルール
+## Development Workflow
 
-- 修正後は `composer cs-fix` → `composer analyse` → `composer test` の順で実行
+After changes: `composer cs-fix` → `composer analyse` → `composer test`
+
+## Adding New Methods
+
+### PHPDoc Template
+
+```php
+/**
+ * Brief description.
+ *
+ * @template T
+ * @param callable(TValue): T $fn
+ * @return Result<T, TError>
+ */
+```
+
+### README Update Required
+
+- New public methods
+- Usage changes
+
+Not required for internal refactoring or bug fixes.
