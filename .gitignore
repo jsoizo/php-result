@@ -1,8 +1,14 @@
+# Language Specific
 /vendor/
 composer.lock
 .php-cs-fixer.cache
 .phpunit.cache/
 /coverage/
+
+# IDE Files
 .idea/
+
+# AI Coding
 .claude/settings.local.json
 plans/
+.serena
