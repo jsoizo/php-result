@@ -16,8 +16,7 @@ final class Success extends Result
      */
     public function __construct(
         private readonly mixed $value,
-    )
-    {
+    ) {
     }
 
     public function isSuccess(): bool
