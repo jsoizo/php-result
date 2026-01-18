@@ -36,3 +36,12 @@ After changes: `composer cs-fix` → `composer analyse` → `composer test`
 - Usage changes
 
 Not required for internal refactoring or bug fixes.
+
+## Changelog
+
+Update `CHANGELOG.md` with each commit:
+- Public API changes only (new methods, breaking changes, bug fixes)
+- Add to `[Unreleased]` section
+- Format: [Keep a Changelog](https://keepachangelog.com/)
+
+> **TODO (v0.1.0)**: Review and update changelog rules for post-release workflow.
