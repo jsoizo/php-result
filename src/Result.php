@@ -37,7 +37,7 @@ abstract class Result
      * @param callable(): TValue $fn
      * @return Result<TValue, \Throwable>
      */
-    public static function try(callable $fn): Result
+    public static function catch(callable $fn): Result
     {
         try {
             return self::success($fn());

@@ -39,9 +39,9 @@ describe('Result::failure', function (): void {
     });
 });
 
-describe('Result::try', function (): void {
+describe('Result::catch', function (): void {
     test('returns Success on normal execution', function (): void {
-        $result = Result::try(fn () => 42);
+        $result = Result::catch(fn () => 42);
 
         expect($result)->toBeInstanceOf(Success::class);
         expect($result->getOrElse(0))->toBe(42);
@@ -49,14 +49,14 @@ describe('Result::try', function (): void {
 
     test('catches exception and returns Failure', function (): void {
         $exception = new RuntimeException('oops');
-        $result = Result::try(fn () => throw $exception);
+        $result = Result::catch(fn () => throw $exception);
 
         expect($result)->toBeInstanceOf(Failure::class);
         expect($result->isFailure())->toBeTrue();
     });
 
     test('catches Error and returns Failure', function (): void {
-        $result = Result::try(fn () => throw new Error('fatal'));
+        $result = Result::catch(fn () => throw new Error('fatal'));
 
         expect($result)->toBeInstanceOf(Failure::class);
     });
