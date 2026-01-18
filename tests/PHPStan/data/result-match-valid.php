@@ -114,4 +114,50 @@ class ResultHolder
             default => 'other',
         };
     }
+
+    /**
+     * @param Result<int, string> $result
+     */
+    function dynamicClassName(Result $result): string
+    {
+        $className = Success::class;
+        return match (true) {
+            $result instanceof $className => 'dynamic',
+            $result instanceof Success => 'success',
+            $result instanceof Failure => 'failure',
+        };
+    }
+
+    /**
+     * @param Result<int, string> $result
+     */
+    function otherClassInstanceof(Result $result): string
+    {
+        return match (true) {
+            $result instanceof Result => 'is result',
+            $result instanceof Success => 'success',
+            $result instanceof Failure => 'failure',
+        };
+    }
+
+    function mixedTypeVariable(mixed $value): string
+    {
+        return match (true) {
+            $value instanceof Success => 'success',
+            $value instanceof Failure => 'failure',
+            default => 'other',
+        };
+    }
+
+    /**
+     * @param Result<int, string> $result
+     */
+    function mixedConditions(Result $result): string
+    {
+        return match (true) {
+            true === true => 'always true',
+            $result instanceof Success => 'success',
+            $result instanceof Failure => 'failure',
+        };
+    }
 }
