@@ -118,7 +118,7 @@ class ResultHolder
     /**
      * @param Result<int, string> $result
      */
-    function dynamicClassName(Result $result): string
+    public function dynamicClassName(Result $result): string
     {
         $className = Success::class;
         return match (true) {
@@ -131,7 +131,7 @@ class ResultHolder
     /**
      * @param Result<int, string> $result
      */
-    function otherClassInstanceof(Result $result): string
+    public function otherClassInstanceof(Result $result): string
     {
         return match (true) {
             $result instanceof Result => 'is result',
@@ -140,7 +140,7 @@ class ResultHolder
         };
     }
 
-    function mixedTypeVariable(mixed $value): string
+    public function mixedTypeVariable(mixed $value): string
     {
         return match (true) {
             $value instanceof Success => 'success',
@@ -152,7 +152,7 @@ class ResultHolder
     /**
      * @param Result<int, string> $result
      */
-    function mixedConditions(Result $result): string
+    public function mixedConditions(Result $result): string
     {
         return match (true) {
             true === true => 'always true',
