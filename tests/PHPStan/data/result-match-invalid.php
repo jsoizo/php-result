@@ -47,3 +47,35 @@ function missingFailureDirectMatch(Result $result): string
         $result instanceof Success => 'success',
     };
 }
+
+/**
+ * @param Result<int, string> $a
+ * @param Result<int, string> $b
+ */
+function multipleResultVariables(Result $a, Result $b): string
+{
+    return match (true) {
+        $a instanceof Success => 'a success',
+        $b instanceof Failure => 'b failure',
+    };
+}
+
+/**
+ * @param Result<int, string> $result
+ */
+function fqcnMissingFailure(Result $result): string
+{
+    return match (true) {
+        $result instanceof \Jsoizo\Result\Success => 'success',
+    };
+}
+
+/**
+ * @param Result<int, string> $result
+ */
+function directMatchMissingSuccess(Result $result): string
+{
+    return match ($result) {
+        $result instanceof Failure => 'failure',
+    };
+}

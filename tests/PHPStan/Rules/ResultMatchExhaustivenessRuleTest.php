@@ -33,6 +33,22 @@ final class ResultMatchExhaustivenessRuleTest extends RuleTestCase
                 'Match expression on Result type is not exhaustive. Missing: Failure.',
                 46,
             ],
+            [
+                'Match expression on Result type is not exhaustive. Missing: Failure.',
+                57,
+            ],
+            [
+                'Match expression on Result type is not exhaustive. Missing: Success.',
+                57,
+            ],
+            [
+                'Match expression on Result type is not exhaustive. Missing: Failure.',
+                68,
+            ],
+            [
+                'Match expression on Result type is not exhaustive. Missing: Success.',
+                78,
+            ],
         ]);
     }
 
