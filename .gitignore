@@ -2,6 +2,7 @@
 composer.lock
 .php-cs-fixer.cache
 .phpunit.cache/
+/coverage/
 .idea/
 .claude/settings.local.json
 plans/
