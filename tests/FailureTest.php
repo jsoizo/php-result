@@ -7,13 +7,13 @@ use Jsoizo\Result\Result;
 
 describe('Failure', function (): void {
     describe('getOrElse', function (): void {
-        test('returns default', function (): void {
+        it('returns default', function (): void {
             $result = Result::failure('error');
 
             expect($result->getOrElse(42))->toBe(42);
         });
 
-        test('returns null default', function (): void {
+        it('returns null default', function (): void {
             $result = Result::failure('error');
 
             expect($result->getOrElse(null))->toBeNull();
@@ -21,20 +21,20 @@ describe('Failure', function (): void {
     });
 
     describe('getOrThrow', function (): void {
-        test('throws Throwable error', function (): void {
+        it('throws Throwable error', function (): void {
             $exception = new RuntimeException('oops');
             $result = Result::failure($exception);
 
             expect(fn () => $result->getOrThrow())->toThrow(RuntimeException::class, 'oops');
         });
 
-        test('throws RuntimeException for non-Throwable error', function (): void {
+        it('throws RuntimeException for non-Throwable error', function (): void {
             $result = Result::failure('error string');
 
             expect(fn () => $result->getOrThrow())->toThrow(RuntimeException::class);
         });
 
-        test('throws RuntimeException with error details', function (): void {
+        it('throws RuntimeException with error details', function (): void {
             $result = Result::failure(['code' => 404, 'message' => 'Not Found']);
 
             expect(fn () => $result->getOrThrow())->toThrow(RuntimeException::class);
@@ -42,14 +42,14 @@ describe('Failure', function (): void {
     });
 
     describe('map', function (): void {
-        test('does nothing', function (): void {
+        it('does nothing', function (): void {
             $result = Result::failure('error')->map(fn ($x) => $x * 2);
 
             expect($result)->toBeInstanceOf(Failure::class);
             expect($result->isFailure())->toBeTrue();
         });
 
-        test('callback is not called', function (): void {
+        it('callback is not called', function (): void {
             $called = false;
             Result::failure('error')->map(function ($x) use (&$called): int {
                 $called = true;
@@ -62,7 +62,7 @@ describe('Failure', function (): void {
     });
 
     describe('mapError', function (): void {
-        test('transforms error', function (): void {
+        it('transforms error', function (): void {
             $result = Result::failure('error')
                 ->mapError(fn ($e) => strtoupper($e));
 
@@ -70,7 +70,7 @@ describe('Failure', function (): void {
             expect($result->getOrElse(null))->toBeNull();
         });
 
-        test('changes error type', function (): void {
+        it('changes error type', function (): void {
             $result = Result::failure('not found')
                 ->mapError(fn ($e) => new RuntimeException($e));
 
@@ -80,7 +80,7 @@ describe('Failure', function (): void {
     });
 
     describe('flatMap', function (): void {
-        test('does nothing', function (): void {
+        it('does nothing', function (): void {
             $result = Result::failure('error')
                 ->flatMap(fn ($x) => Result::success($x * 2));
 
@@ -88,7 +88,7 @@ describe('Failure', function (): void {
             expect($result->isFailure())->toBeTrue();
         });
 
-        test('callback is not called', function (): void {
+        it('callback is not called', function (): void {
             $called = false;
             Result::failure('error')->flatMap(function ($x) use (&$called) {
                 $called = true;
@@ -99,7 +99,7 @@ describe('Failure', function (): void {
             expect($called)->toBeFalse();
         });
 
-        test('preserves original Failure through chain', function (): void {
+        it('preserves original Failure through chain', function (): void {
             $originalError = new RuntimeException('original');
             $result = Result::failure($originalError)
                 ->flatMap(fn ($x) => Result::success($x))

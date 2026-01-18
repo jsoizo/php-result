@@ -7,7 +7,7 @@ use Jsoizo\Result\Result;
 use Jsoizo\Result\Success;
 
 describe('Result::success', function (): void {
-    test('creates Success instance', function (): void {
+    it('creates Success instance', function (): void {
         $result = Result::success(42);
 
         expect($result)->toBeInstanceOf(Success::class);
@@ -15,7 +15,7 @@ describe('Result::success', function (): void {
         expect($result->isFailure())->toBeFalse();
     });
 
-    test('handles null value', function (): void {
+    it('handles null value', function (): void {
         $result = Result::success(null);
 
         expect($result)->toBeInstanceOf(Success::class);
@@ -24,7 +24,7 @@ describe('Result::success', function (): void {
 });
 
 describe('Result::failure', function (): void {
-    test('creates Failure instance', function (): void {
+    it('creates Failure instance', function (): void {
         $result = Result::failure('error');
 
         expect($result)->toBeInstanceOf(Failure::class);
@@ -32,7 +32,7 @@ describe('Result::failure', function (): void {
         expect($result->isFailure())->toBeTrue();
     });
 
-    test('handles null error', function (): void {
+    it('handles null error', function (): void {
         $result = Result::failure(null);
 
         expect($result)->toBeInstanceOf(Failure::class);
@@ -40,14 +40,14 @@ describe('Result::failure', function (): void {
 });
 
 describe('Result::catch', function (): void {
-    test('returns Success on normal execution', function (): void {
+    it('returns Success on normal execution', function (): void {
         $result = Result::catch(fn () => 42);
 
         expect($result)->toBeInstanceOf(Success::class);
         expect($result->getOrElse(0))->toBe(42);
     });
 
-    test('catches exception and returns Failure', function (): void {
+    it('catches exception and returns Failure', function (): void {
         $exception = new RuntimeException('oops');
         $result = Result::catch(fn () => throw $exception);
 
@@ -55,7 +55,7 @@ describe('Result::catch', function (): void {
         expect($result->isFailure())->toBeTrue();
     });
 
-    test('catches Error and returns Failure', function (): void {
+    it('catches Error and returns Failure', function (): void {
         $result = Result::catch(fn () => throw new Error('fatal'));
 
         expect($result)->toBeInstanceOf(Failure::class);
