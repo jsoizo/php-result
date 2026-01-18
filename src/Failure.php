@@ -5,34 +5,56 @@ declare(strict_types=1);
 namespace Jsoizo\Result;
 
 /**
- * @template T
- * @template E
+ * Represents a failed Result containing an error.
+ *
+ * Failure is the concrete implementation of Result for failed computations.
+ * It holds the error value and implements all Result operations to short-circuit
+ * value transformations while allowing error transformations.
+ *
+ * @template T The type of the success value (unused, for type compatibility)
+ * @template E The type of the error value
  * @extends Result<T, E>
  */
 final class Failure extends Result
 {
     /**
-     * @param E $error
+     * Creates a new Failure instance with the given error.
+     *
+     * @param E $error The error value to store
      */
     public function __construct(
         private readonly mixed $error,
     ) {
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * Always returns false for Failure instances.
+     */
     public function isSuccess(): bool
     {
         return false;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * Always returns true for Failure instances.
+     */
     public function isFailure(): bool
     {
         return true;
     }
 
     /**
-     * @template TDefault
-     * @param TDefault $default
-     * @return TDefault
+     * {@inheritDoc}
+     *
+     * For Failure, always returns the default value since there is no success value.
+     *
+     * @template TDefault The type of the default value
+     * @param TDefault $default The default value to return
+     * @return TDefault The default value
      */
     public function getOrElse(mixed $default): mixed
     {
@@ -40,7 +62,13 @@ final class Failure extends Result
     }
 
     /**
-     * @return never
+     * {@inheritDoc}
+     *
+     * For Failure, always throws an exception. If the error is a Throwable,
+     * it is thrown directly. Otherwise, a RuntimeException is thrown with
+     * the error value formatted as a string.
+     *
+     * @return never This method never returns normally
      * @throws \Throwable
      */
     public function getOrThrow(): never
@@ -52,9 +80,14 @@ final class Failure extends Result
     }
 
     /**
-     * @template U
-     * @param callable(T): U $fn
-     * @return Failure<U, E>
+     * {@inheritDoc}
+     *
+     * For Failure, returns this instance unchanged. The function is not called
+     * since there is no success value to transform.
+     *
+     * @template U The type of the transformed value (unused)
+     * @param callable(T): U $fn The transformation function (not called)
+     * @return Failure<U, E> This Failure instance (type-widened for compatibility)
      */
     public function map(callable $fn): Failure
     {
@@ -62,9 +95,13 @@ final class Failure extends Result
     }
 
     /**
-     * @template F
-     * @param callable(E): F $fn
-     * @return Failure<T, F>
+     * {@inheritDoc}
+     *
+     * Applies the function to the contained error and wraps the result in a new Failure.
+     *
+     * @template F The type of the transformed error
+     * @param callable(E): F $fn The error transformation function
+     * @return Failure<T, F> A new Failure containing the transformed error
      */
     public function mapError(callable $fn): Failure
     {
@@ -73,9 +110,14 @@ final class Failure extends Result
     }
 
     /**
-     * @template U
-     * @param callable(T): Result<U, E> $fn
-     * @return Failure<U, E>
+     * {@inheritDoc}
+     *
+     * For Failure, returns this instance unchanged. The function is not called
+     * since there is no success value to chain operations on.
+     *
+     * @template U The success type of the resulting Result (unused)
+     * @param callable(T): Result<U, E> $fn The function (not called)
+     * @return Failure<U, E> This Failure instance (type-widened for compatibility)
      */
     public function flatMap(callable $fn): Failure
     {

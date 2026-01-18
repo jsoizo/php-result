@@ -5,34 +5,56 @@ declare(strict_types=1);
 namespace Jsoizo\Result;
 
 /**
- * @template T
- * @template E
+ * Represents a successful Result containing a value.
+ *
+ * Success is the concrete implementation of Result for successful computations.
+ * It holds the success value and implements all Result operations to work
+ * with that value, passing it through transformations or returning it directly.
+ *
+ * @template T The type of the success value
+ * @template E The type of the error value (unused, for type compatibility)
  * @extends Result<T, E>
  */
 final class Success extends Result
 {
     /**
-     * @param T $value
+     * Creates a new Success instance with the given value.
+     *
+     * @param T $value The success value to store
      */
     public function __construct(
         private readonly mixed $value,
     ) {
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * Always returns true for Success instances.
+     */
     public function isSuccess(): bool
     {
         return true;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * Always returns false for Success instances.
+     */
     public function isFailure(): bool
     {
         return false;
     }
 
     /**
-     * @template TDefault
-     * @param TDefault $default
-     * @return T
+     * {@inheritDoc}
+     *
+     * For Success, always returns the contained value, ignoring the default.
+     *
+     * @template TDefault The type of the default value (unused)
+     * @param TDefault $default The default value (ignored)
+     * @return T The contained success value
      */
     public function getOrElse(mixed $default): mixed
     {
@@ -40,7 +62,11 @@ final class Success extends Result
     }
 
     /**
-     * @return T
+     * {@inheritDoc}
+     *
+     * For Success, always returns the contained value without throwing.
+     *
+     * @return T The contained success value
      */
     public function getOrThrow(): mixed
     {
@@ -48,9 +74,13 @@ final class Success extends Result
     }
 
     /**
-     * @template U
-     * @param callable(T): U $fn
-     * @return Success<U, E>
+     * {@inheritDoc}
+     *
+     * Applies the function to the contained value and wraps the result in a new Success.
+     *
+     * @template U The type of the transformed value
+     * @param callable(T): U $fn The transformation function
+     * @return Success<U, E> A new Success containing the transformed value
      */
     public function map(callable $fn): Success
     {
@@ -59,9 +89,13 @@ final class Success extends Result
     }
 
     /**
-     * @template F
-     * @param callable(E): F $fn
-     * @return Success<T, F>
+     * {@inheritDoc}
+     *
+     * For Success, returns this instance unchanged since there is no error to transform.
+     *
+     * @template F The type of the transformed error (unused)
+     * @param callable(E): F $fn The error transformation function (not called)
+     * @return Success<T, F> This Success instance (type-widened for compatibility)
      */
     public function mapError(callable $fn): Success
     {
@@ -69,9 +103,13 @@ final class Success extends Result
     }
 
     /**
-     * @template U
-     * @param callable(T): Result<U, E> $fn
-     * @return Result<U, E>
+     * {@inheritDoc}
+     *
+     * Applies the function to the contained value and returns its Result directly.
+     *
+     * @template U The success type of the resulting Result
+     * @param callable(T): Result<U, E> $fn The function returning a new Result
+     * @return Result<U, E> The Result returned by the function
      */
     public function flatMap(callable $fn): Result
     {
