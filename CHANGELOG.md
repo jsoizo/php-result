@@ -15,3 +15,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Error extraction methods: `getErrorOrElse()`, `getErrorOrThrow()`
 - `ResultException` for unwrap operations (`getOrThrow()`, `getErrorOrThrow()`)
 - Exception catching via `Result::catch()`
+- PHPStan rule for match expression exhaustiveness check on Result types

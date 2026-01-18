@@ -80,6 +80,38 @@ Requirements:
 - PHPStan 2.1.18 or later
 - No additional packages needed
 
-Note: Exhaustive checking in match expressions is not yet supported by PHPStan. Use `fold()` method (when available) or handle all cases manually.
-
 See: [PHPStan Sealed Classes](https://phpstan.org/writing-php-code/phpdocs-basics#sealed-classes)
+
+### Match Exhaustiveness Check
+
+This library includes a custom PHPStan rule that ensures match expressions on Result types are exhaustive.
+
+**Setup:**
+
+The rule is automatically enabled when you use PHPStan with this library (via `composer.json` extra config). Alternatively, add to your `phpstan.neon`:
+
+```neon
+includes:
+    - vendor/jsoizo/php-result/extension.neon
+```
+
+**What it checks:**
+
+```php
+// Error: Match expression on Result type is not exhaustive. Missing: Failure.
+match (true) {
+    $result instanceof Success => 'success',
+};
+
+// OK: All cases covered
+match (true) {
+    $result instanceof Success => 'success',
+    $result instanceof Failure => 'failure',
+};
+
+// OK: default covers remaining cases
+match (true) {
+    $result instanceof Success => 'success',
+    default => 'failure',
+};
+```

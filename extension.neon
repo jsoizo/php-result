@@ -1,0 +1,5 @@
+services:
+    -
+        class: Jsoizo\Result\PHPStan\Rules\ResultMatchExhaustivenessRule
+        tags:
+            - phpstan.rules.rule
