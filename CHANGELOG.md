@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Type-safe Result type implementation (`Success<T, E>`, `Failure<T, E>`)
 - PHPStan level max support
-- Transformation methods: `map()`, `mapError()`, `flatMap()`
+- Transformation methods: `map()`, `mapError()`, `flatMap()`, `fold()`
 - Value extraction methods: `getOrElse()`, `getOrThrow()`
 - Error extraction methods: `getErrorOrElse()`, `getErrorOrThrow()`
 - `ResultException` for unwrap operations (`getOrThrow()`, `getErrorOrThrow()`)

@@ -61,3 +61,55 @@ describe('Result::catch', function (): void {
         expect($result)->toBeInstanceOf(Failure::class);
     });
 });
+
+describe('Result::fold', function (): void {
+    it('applies onSuccess for Success', function (): void {
+        $result = Result::success(42);
+
+        $value = $result->fold(
+            fn ($error) => "Error: {$error}",
+            fn ($value) => "Value: {$value}"
+        );
+
+        expect($value)->toBe('Value: 42');
+    });
+
+    it('applies onFailure for Failure', function (): void {
+        $result = Result::failure('oops');
+
+        $value = $result->fold(
+            fn ($error) => "Error: {$error}",
+            fn ($value) => "Value: {$value}"
+        );
+
+        expect($value)->toBe('Error: oops');
+    });
+
+    it('works with named arguments', function (): void {
+        $success = Result::success(10);
+        $failure = Result::failure('err');
+
+        $successValue = $success->fold(
+            onFailure: fn ($e) => 0,
+            onSuccess: fn ($v) => $v * 2
+        );
+        $failureValue = $failure->fold(
+            onSuccess: fn ($v) => $v * 2,
+            onFailure: fn ($e) => -1
+        );
+
+        expect($successValue)->toBe(20);
+        expect($failureValue)->toBe(-1);
+    });
+
+    it('works with positional arguments', function (): void {
+        $success = Result::success(5);
+        $failure = Result::failure('error');
+
+        $successValue = $success->fold(fn ($e) => 0, fn ($v) => $v + 1);
+        $failureValue = $failure->fold(fn ($e) => -1, fn ($v) => $v + 1);
+
+        expect($successValue)->toBe(6);
+        expect($failureValue)->toBe(-1);
+    });
+});

@@ -38,6 +38,12 @@ $value = $failure->getOrElse(0); // 0
 
 // Catch exceptions
 $result = Result::catch(fn() => riskyOperation());
+
+// Handle both cases with fold
+$message = $result->fold(
+    onFailure: fn($error) => "Error: {$error->getMessage()}",
+    onSuccess: fn($value) => "Got: {$value}"
+);
 ```
 
 ## API
@@ -63,6 +69,7 @@ $result = Result::catch(fn() => riskyOperation());
 | `map($fn)` | Transform success value |
 | `mapError($fn)` | Transform error value |
 | `flatMap($fn)` | Chain Result-returning operations |
+| `fold($onFailure, $onSuccess)` | Handle both cases and return a value |
 
 ## PHPStan Integration
 
@@ -115,3 +122,4 @@ match (true) {
     default => 'failure',
 };
 ```
+

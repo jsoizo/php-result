@@ -148,4 +148,19 @@ final class Failure extends Result
     {
         return $this->error;
     }
+
+    /**
+     * {@inheritDoc}
+     *
+     * For Failure, applies the onFailure function to the contained error.
+     *
+     * @template U The return type of both callbacks
+     * @param callable(E): U $onFailure Function to apply to the error value
+     * @param callable(T): U $onSuccess Function to apply if this is a Success (not called)
+     * @return U The result of applying onFailure to the contained error
+     */
+    public function fold(callable $onFailure, callable $onSuccess): mixed
+    {
+        return $onFailure($this->error);
+    }
 }

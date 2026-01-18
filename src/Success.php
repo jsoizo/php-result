@@ -142,4 +142,19 @@ final class Success extends Result
     {
         throw new ResultException('Result is a success');
     }
+
+    /**
+     * {@inheritDoc}
+     *
+     * For Success, applies the onSuccess function to the contained value.
+     *
+     * @template U The return type of both callbacks
+     * @param callable(E): U $onFailure Function to apply if this is a Failure (not called)
+     * @param callable(T): U $onSuccess Function to apply to the success value
+     * @return U The result of applying onSuccess to the contained value
+     */
+    public function fold(callable $onFailure, callable $onSuccess): mixed
+    {
+        return $onSuccess($this->value);
+    }
 }

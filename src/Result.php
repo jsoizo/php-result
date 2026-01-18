@@ -169,4 +169,17 @@ abstract class Result
      * @throws \LogicException If this is a Success
      */
     abstract public function getErrorOrThrow(): mixed;
+
+    /**
+     * Applies one of two functions depending on whether this is a Success or Failure.
+     *
+     * This method allows handling both cases in a single expression, transforming
+     * the Result into a single value of type U. Both callbacks must return the same type.
+     *
+     * @template U The return type of both callbacks
+     * @param callable(E): U $onFailure Function to apply if this is a Failure
+     * @param callable(T): U $onSuccess Function to apply if this is a Success
+     * @return U The result of applying the appropriate function
+     */
+    abstract public function fold(callable $onFailure, callable $onSuccess): mixed;
 }
