@@ -63,3 +63,25 @@ $result = Result::catch(fn() => riskyOperation());
 | `map($fn)` | Transform success value |
 | `mapError($fn)` | Transform error value |
 | `flatMap($fn)` | Chain Result-returning operations |
+
+## PHPStan Integration
+
+### Sealed Class Support
+
+Result is marked as a sealed class using `@phpstan-sealed`. This enables exhaustive checking in match expressions when using PHPStan 2.1.18+.
+
+```php
+function handle(Result $result): string {
+    return match ($result::class) {
+        Success::class => 'ok',
+        Failure::class => 'error',
+        // PHPStan will warn if a case is missing
+    };
+}
+```
+
+Requirements:
+- PHPStan 2.1.18 or later
+- No additional packages needed
+
+See: [PHPStan Sealed Classes](https://phpstan.org/writing-php-code/phpdocs-basics#sealed-classes)

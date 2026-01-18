@@ -12,4 +12,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - PHPStan level max support
 - Transformation methods: `map()`, `mapError()`, `flatMap()`
 - Value extraction methods: `getOrElse()`, `getOrThrow()`
+- Error extraction methods: `getErrorOrElse()`, `getErrorOrThrow()`
+- `ResultException` for unwrap operations (`getOrThrow()`, `getErrorOrThrow()`)
 - Exception catching via `Result::catch()`

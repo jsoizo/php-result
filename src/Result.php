@@ -14,6 +14,8 @@ namespace Jsoizo\Result;
  * @template T The type of the success value
  * @template E The type of the error value
  *
+ * @phpstan-sealed Success<T, E>|Failure<T, E>
+ *
  * @see Success
  * @see Failure
  */
