@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Jsoizo\Result\Failure;
 use Jsoizo\Result\Result;
+use Jsoizo\Result\ResultException;
 
 describe('Failure', function (): void {
     describe('getOrElse', function (): void {
@@ -28,16 +29,16 @@ describe('Failure', function (): void {
             expect(fn () => $result->getOrThrow())->toThrow(RuntimeException::class, 'oops');
         });
 
-        it('throws RuntimeException for non-Throwable error', function (): void {
+        it('throws ResultException for non-Throwable error', function (): void {
             $result = Result::failure('error string');
 
-            expect(fn () => $result->getOrThrow())->toThrow(RuntimeException::class);
+            expect(fn () => $result->getOrThrow())->toThrow(ResultException::class);
         });
 
-        it('throws RuntimeException with error details', function (): void {
+        it('throws ResultException for array error', function (): void {
             $result = Result::failure(['code' => 404, 'message' => 'Not Found']);
 
-            expect(fn () => $result->getOrThrow())->toThrow(RuntimeException::class);
+            expect(fn () => $result->getOrThrow())->toThrow(ResultException::class);
         });
     });
 

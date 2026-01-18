@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Jsoizo\Result\Failure;
 use Jsoizo\Result\Result;
+use Jsoizo\Result\ResultException;
 use Jsoizo\Result\Success;
 
 describe('Success', function (): void {
@@ -139,17 +140,17 @@ describe('Success', function (): void {
     });
 
     describe('getErrorOrThrow', function (): void {
-        it('throws LogicException', function (): void {
+        it('throws ResultException', function (): void {
             $result = Result::success(42);
 
-            expect(fn () => $result->getErrorOrThrow())->toThrow(LogicException::class);
+            expect(fn () => $result->getErrorOrThrow())->toThrow(ResultException::class);
         });
 
-        it('throws LogicException with message', function (): void {
+        it('throws ResultException with message', function (): void {
             $result = Result::success('value');
 
             expect(fn () => $result->getErrorOrThrow())
-                ->toThrow(LogicException::class, 'Result is a success: cannot get error value');
+                ->toThrow(ResultException::class, 'Result is a success');
         });
     });
 });

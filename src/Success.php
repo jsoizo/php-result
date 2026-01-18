@@ -133,13 +133,13 @@ final class Success extends Result
     /**
      * {@inheritDoc}
      *
-     * For Success, always throws a LogicException since there is no error to return.
+     * For Success, always throws a ResultException since there is no error to return.
      *
      * @return never This method never returns normally
-     * @throws \LogicException Always thrown for Success
+     * @throws ResultException Always thrown for Success
      */
     public function getErrorOrThrow(): never
     {
-        throw new \LogicException('Result is a success: cannot get error value');
+        throw new ResultException('Result is a success');
     }
 }

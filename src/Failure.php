@@ -65,8 +65,7 @@ final class Failure extends Result
      * {@inheritDoc}
      *
      * For Failure, always throws an exception. If the error is a Throwable,
-     * it is thrown directly. Otherwise, a RuntimeException is thrown with
-     * the error value formatted as a string.
+     * it is thrown directly. Otherwise, a ResultException is thrown.
      *
      * @return never This method never returns normally
      * @throws \Throwable
@@ -76,7 +75,7 @@ final class Failure extends Result
         if ($this->error instanceof \Throwable) {
             throw $this->error;
         }
-        throw new \RuntimeException('Result is a failure: ' . print_r($this->error, true));
+        throw new ResultException('Result is a failure');
     }
 
     /**
