@@ -4,3 +4,4 @@ composer.lock
 .phpunit.cache/
 .idea/
 .claude/settings.local.json
+plans/
