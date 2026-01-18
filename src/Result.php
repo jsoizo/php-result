@@ -144,4 +144,27 @@ abstract class Result
      * @return Result<U, E> The Result from the function, or the original Failure
      */
     abstract public function flatMap(callable $fn): Result;
+
+    /**
+     * Returns the error value, or the given default if this is a Success.
+     *
+     * Provides a safe way to extract the error without risking exceptions.
+     * For Failure, returns the contained error. For Success, returns the default.
+     *
+     * @template TDefault The type of the default value
+     * @param TDefault $default The value to return if this is a Success
+     * @return E|TDefault The error value or the default
+     */
+    abstract public function getErrorOrElse(mixed $default): mixed;
+
+    /**
+     * Returns the error value, or throws an exception if this is a Success.
+     *
+     * For Failure, returns the contained error. For Success, throws a LogicException
+     * since attempting to get an error from a successful result is a programming error.
+     *
+     * @return E The error value
+     * @throws \LogicException If this is a Success
+     */
+    abstract public function getErrorOrThrow(): mixed;
 }

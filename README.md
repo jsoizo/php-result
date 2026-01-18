@@ -58,6 +58,8 @@ $result = Result::catch(fn() => riskyOperation());
 | `isFailure()` | Returns true if Failure |
 | `getOrElse($default)` | Get value or default |
 | `getOrThrow()` | Get value or throw |
+| `getErrorOrElse($default)` | Get error or default |
+| `getErrorOrThrow()` | Get error or throw LogicException |
 | `map($fn)` | Transform success value |
 | `mapError($fn)` | Transform error value |
 | `flatMap($fn)` | Chain Result-returning operations |

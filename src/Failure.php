@@ -123,4 +123,30 @@ final class Failure extends Result
     {
         return $this;
     }
+
+    /**
+     * {@inheritDoc}
+     *
+     * For Failure, always returns the contained error, ignoring the default.
+     *
+     * @template TDefault The type of the default value (unused)
+     * @param TDefault $default The default value (ignored)
+     * @return E The contained error value
+     */
+    public function getErrorOrElse(mixed $default): mixed
+    {
+        return $this->error;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * For Failure, always returns the contained error without throwing.
+     *
+     * @return E The contained error value
+     */
+    public function getErrorOrThrow(): mixed
+    {
+        return $this->error;
+    }
 }

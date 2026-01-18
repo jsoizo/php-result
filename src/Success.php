@@ -115,4 +115,31 @@ final class Success extends Result
     {
         return $fn($this->value);
     }
+
+    /**
+     * {@inheritDoc}
+     *
+     * For Success, always returns the default value since there is no error.
+     *
+     * @template TDefault The type of the default value
+     * @param TDefault $default The default value to return
+     * @return TDefault The default value
+     */
+    public function getErrorOrElse(mixed $default): mixed
+    {
+        return $default;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * For Success, always throws a LogicException since there is no error to return.
+     *
+     * @return never This method never returns normally
+     * @throws \LogicException Always thrown for Success
+     */
+    public function getErrorOrThrow(): never
+    {
+        throw new \LogicException('Result is a success: cannot get error value');
+    }
 }

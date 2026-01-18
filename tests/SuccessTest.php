@@ -123,4 +123,33 @@ describe('Success', function (): void {
             expect($secondCalled)->toBeFalse();
         });
     });
+
+    describe('getErrorOrElse', function (): void {
+        it('returns default', function (): void {
+            $result = Result::success(42);
+
+            expect($result->getErrorOrElse('default error'))->toBe('default error');
+        });
+
+        it('returns null default', function (): void {
+            $result = Result::success(42);
+
+            expect($result->getErrorOrElse(null))->toBeNull();
+        });
+    });
+
+    describe('getErrorOrThrow', function (): void {
+        it('throws LogicException', function (): void {
+            $result = Result::success(42);
+
+            expect(fn () => $result->getErrorOrThrow())->toThrow(LogicException::class);
+        });
+
+        it('throws LogicException with message', function (): void {
+            $result = Result::success('value');
+
+            expect(fn () => $result->getErrorOrThrow())
+                ->toThrow(LogicException::class, 'Result is a success: cannot get error value');
+        });
+    });
 });

@@ -108,4 +108,45 @@ describe('Failure', function (): void {
             expect(fn () => $result->getOrThrow())->toThrow(RuntimeException::class, 'original');
         });
     });
+
+    describe('getErrorOrElse', function (): void {
+        it('returns error', function (): void {
+            $result = Result::failure('error message');
+
+            expect($result->getErrorOrElse('default'))->toBe('error message');
+        });
+
+        it('ignores default for error value', function (): void {
+            $result = Result::failure(['code' => 404]);
+
+            expect($result->getErrorOrElse('default'))->toBe(['code' => 404]);
+        });
+
+        it('returns null when error is null', function (): void {
+            $result = Result::failure(null);
+
+            expect($result->getErrorOrElse('default'))->toBeNull();
+        });
+    });
+
+    describe('getErrorOrThrow', function (): void {
+        it('returns error', function (): void {
+            $result = Result::failure('error message');
+
+            expect($result->getErrorOrThrow())->toBe('error message');
+        });
+
+        it('returns exception error', function (): void {
+            $exception = new RuntimeException('oops');
+            $result = Result::failure($exception);
+
+            expect($result->getErrorOrThrow())->toBe($exception);
+        });
+
+        it('returns null when error is null', function (): void {
+            $result = Result::failure(null);
+
+            expect($result->getErrorOrThrow())->toBeNull();
+        });
+    });
 });
