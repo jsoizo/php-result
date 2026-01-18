@@ -68,20 +68,18 @@ $result = Result::catch(fn() => riskyOperation());
 
 ### Sealed Class Support
 
-Result is marked as a sealed class using `@phpstan-sealed`. This enables exhaustive checking in match expressions when using PHPStan 2.1.18+.
+Result is marked as a sealed class using `@phpstan-sealed`. This prevents creating custom subclasses of Result outside of Success and Failure.
 
 ```php
-function handle(Result $result): string {
-    return match ($result::class) {
-        Success::class => 'ok',
-        Failure::class => 'error',
-        // PHPStan will warn if a case is missing
-    };
-}
+// PHPStan will report an error for unauthorized subclasses:
+// "Type CustomResult is not allowed to be a subtype of Result"
+class CustomResult extends Result { ... }
 ```
 
 Requirements:
 - PHPStan 2.1.18 or later
 - No additional packages needed
+
+Note: Exhaustive checking in match expressions is not yet supported by PHPStan. Use `fold()` method (when available) or handle all cases manually.
 
 See: [PHPStan Sealed Classes](https://phpstan.org/writing-php-code/phpdocs-basics#sealed-classes)
