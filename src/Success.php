@@ -16,7 +16,8 @@ final class Success extends Result
      */
     public function __construct(
         private readonly mixed $value,
-    ) {
+    )
+    {
     }
 
     public function isSuccess(): bool
@@ -65,10 +66,7 @@ final class Success extends Result
      */
     public function mapError(callable $fn): Success
     {
-        /** @var Success<T, F> $result */
-        $result = $this; // @phpstan-ignore varTag.nativeType
-
-        return $result;
+        return $this;
     }
 
     /**

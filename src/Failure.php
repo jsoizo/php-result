@@ -58,10 +58,7 @@ final class Failure extends Result
      */
     public function map(callable $fn): Failure
     {
-        /** @var Failure<U, E> $result */
-        $result = $this; // @phpstan-ignore varTag.nativeType
-
-        return $result;
+        return $this;
     }
 
     /**
@@ -82,9 +79,6 @@ final class Failure extends Result
      */
     public function flatMap(callable $fn): Failure
     {
-        /** @var Failure<U, E> $result */
-        $result = $this; // @phpstan-ignore varTag.nativeType
-
-        return $result;
+        return $this;
     }
 }
