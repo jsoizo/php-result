@@ -1,0 +1,42 @@
+{
+    "name": "jsoizo/php-result",
+    "description": "A type-safe Result type for PHP 8.1+ with first-class PHPStan support.",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "jsoizo"
+        }
+    ],
+    "require": {
+        "php": "^8.2"
+    },
+    "require-dev": {
+        "phpstan/phpstan": "^2.0",
+        "pestphp/pest": "^3.0",
+        "friendsofphp/php-cs-fixer": "^3.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Jsoizo\\Result\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Jsoizo\\Result\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "pest",
+        "analyse": "phpstan analyse",
+        "cs-check": "php-cs-fixer fix --dry-run --diff",
+        "cs-fix": "php-cs-fixer fix"
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "minimum-stability": "stable"
+}
