@@ -44,6 +44,14 @@ $message = $result->fold(
     onFailure: fn($error) => "Error: {$error->getMessage()}",
     onSuccess: fn($value) => "Got: {$value}"
 );
+
+// Recover from failure with default value
+$recovered = $failure->recover(fn($e) => 'default'); // Success('default')
+
+// Chain fallback operations
+$result = fetchFromPrimaryDb()
+    ->recoverWith(fn($e) => fetchFromSecondaryDb())
+    ->recoverWith(fn($e) => Result::success('cached fallback'));
 ```
 
 ## API
@@ -70,6 +78,8 @@ $message = $result->fold(
 | `mapError($fn)` | Transform error value |
 | `flatMap($fn)` | Chain Result-returning operations |
 | `fold($onFailure, $onSuccess)` | Handle both cases and return a value |
+| `recover($fn)` | Recover from error with a value |
+| `recoverWith($fn)` | Recover from error with a Result |
 
 ## PHPStan Integration
 

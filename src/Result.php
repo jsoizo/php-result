@@ -182,4 +182,30 @@ abstract class Result
      * @return U The result of applying the appropriate function
      */
     abstract public function fold(callable $onFailure, callable $onSuccess): mixed;
+
+    /**
+     * Recovers from a Failure by transforming the error into a success value.
+     *
+     * If this is a Failure, applies the function to the error and wraps the result
+     * in a new Success. If this is a Success, returns the Success unchanged.
+     *
+     * @template T2 The type of the recovered value
+     * @param callable(E): T2 $fn The recovery function
+     * @return Result<T|T2, E> A new Success with the recovered value, or the original Success
+     */
+    abstract public function recover(callable $fn): Result;
+
+    /**
+     * Recovers from a Failure by transforming the error into a new Result.
+     *
+     * If this is a Failure, applies the function to the error and returns the
+     * resulting Result directly. If this is a Success, returns the Success unchanged.
+     * This allows chaining fallback operations or changing the error type.
+     *
+     * @template T2 The success type of the resulting Result
+     * @template F The error type of the resulting Result
+     * @param callable(E): Result<T2, F> $fn The recovery function returning a new Result
+     * @return Result<T|T2, F> The Result from the function, or the original Success
+     */
+    abstract public function recoverWith(callable $fn): Result;
 }

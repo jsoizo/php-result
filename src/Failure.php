@@ -163,4 +163,34 @@ final class Failure extends Result
     {
         return $onFailure($this->error);
     }
+
+    /**
+     * {@inheritDoc}
+     *
+     * Applies the function to the contained error and wraps the result in a new Success.
+     *
+     * @template T2 The type of the recovered value
+     * @param callable(E): T2 $fn The recovery function
+     * @return Success<T2, E> A new Success containing the recovered value
+     */
+    public function recover(callable $fn): Success
+    {
+        /** @var Success<T2, E> */
+        return new Success($fn($this->error));
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * Applies the function to the contained error and returns the resulting Result directly.
+     *
+     * @template T2 The success type of the resulting Result
+     * @template F The error type of the resulting Result
+     * @param callable(E): Result<T2, F> $fn The recovery function returning a new Result
+     * @return Result<T2, F> The Result returned by the function
+     */
+    public function recoverWith(callable $fn): Result
+    {
+        return $fn($this->error);
+    }
 }

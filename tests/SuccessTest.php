@@ -153,4 +153,44 @@ describe('Success', function (): void {
                 ->toThrow(ResultException::class, 'Result is a success');
         });
     });
+
+    describe('recover', function (): void {
+        it('does nothing', function (): void {
+            $result = Result::success(42)->recover(fn ($e) => 0);
+
+            expect($result)->toBeInstanceOf(Success::class);
+            expect($result->getOrElse(0))->toBe(42);
+        });
+
+        it('callback is not called', function (): void {
+            $called = false;
+            Result::success(42)->recover(function ($e) use (&$called): int {
+                $called = true;
+
+                return 0;
+            });
+
+            expect($called)->toBeFalse();
+        });
+    });
+
+    describe('recoverWith', function (): void {
+        it('does nothing', function (): void {
+            $result = Result::success(42)->recoverWith(fn ($e) => Result::success(0));
+
+            expect($result)->toBeInstanceOf(Success::class);
+            expect($result->getOrElse(0))->toBe(42);
+        });
+
+        it('callback is not called', function (): void {
+            $called = false;
+            Result::success(42)->recoverWith(function ($e) use (&$called) {
+                $called = true;
+
+                return Result::success(0);
+            });
+
+            expect($called)->toBeFalse();
+        });
+    });
 });

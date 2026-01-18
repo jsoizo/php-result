@@ -157,4 +157,33 @@ final class Success extends Result
     {
         return $onSuccess($this->value);
     }
+
+    /**
+     * {@inheritDoc}
+     *
+     * For Success, returns this instance unchanged since there is no error to recover from.
+     *
+     * @template T2 The type of the recovered value (unused)
+     * @param callable(E): T2 $fn The recovery function (not called)
+     * @return Success<T, E> This Success instance
+     */
+    public function recover(callable $fn): Success
+    {
+        return $this;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * For Success, returns this instance unchanged since there is no error to recover from.
+     *
+     * @template T2 The success type of the resulting Result (unused)
+     * @template F The error type of the resulting Result (unused)
+     * @param callable(E): Result<T2, F> $fn The recovery function (not called)
+     * @return Success<T, F> This Success instance (type-widened for compatibility)
+     */
+    public function recoverWith(callable $fn): Success
+    {
+        return $this;
+    }
 }
