@@ -1,13 +1,25 @@
 {
     "name": "jsoizo/php-result",
-    "description": "A type-safe Result type for PHP 8.1+ with first-class PHPStan support.",
+    "description": "A type-safe Result type for PHP 8.2+ with first-class PHPStan support.",
     "type": "library",
     "license": "MIT",
+    "keywords": [
+        "result",
+        "error-handling",
+        "functional-programming",
+        "type-safe",
+        "phpstan"
+    ],
+    "homepage": "https://github.com/jsoizo/php-result",
     "authors": [
         {
             "name": "jsoizo"
         }
     ],
+    "support": {
+        "issues": "https://github.com/jsoizo/php-result/issues",
+        "source": "https://github.com/jsoizo/php-result"
+    },
     "require": {
         "php": "^8.2"
     },

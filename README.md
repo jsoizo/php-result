@@ -1,5 +1,9 @@
 # php-result
 
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/jsoizo/php-result.svg)](https://packagist.org/packages/jsoizo/php-result)
+[![CI](https://github.com/jsoizo/php-result/actions/workflows/ci.yml/badge.svg)](https://github.com/jsoizo/php-result/actions/workflows/ci.yml)
+[![License](https://img.shields.io/packagist/l/jsoizo/php-result.svg)](https://packagist.org/packages/jsoizo/php-result)
+
 Type-safe Result type library for PHP 8.2+
 
 ## Features

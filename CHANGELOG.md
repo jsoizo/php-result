@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.0] - 2025-01-19
+
 ### Added
 - Type-safe Result type implementation (`Success<T, E>`, `Failure<T, E>`)
 - PHPStan level max support
