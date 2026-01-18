@@ -30,28 +30,6 @@ function withDefault(Result $result): string
     };
 }
 
-/**
- * @param Result<int, string> $result
- */
-function exhaustiveDirectMatch(Result $result): string
-{
-    return match ($result) {
-        $result instanceof Success => 'success',
-        $result instanceof Failure => 'failure',
-    };
-}
-
-/**
- * @param Result<int, string> $result
- */
-function directMatchWithDefault(Result $result): string
-{
-    return match ($result) {
-        $result instanceof Success => 'success',
-        default => 'other',
-    };
-}
-
 function nonResultMatch(): string
 {
     $value = 'test';

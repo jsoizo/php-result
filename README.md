@@ -123,3 +123,19 @@ match (true) {
 };
 ```
 
+**Note: PHPStan's `match.unhandled` error**
+
+Even when all cases are covered, PHPStan may report `Match expression does not handle remaining value: true`. This is because PHPStan doesn't use sealed class information for match exhaustiveness.
+
+To suppress this error, use the `@phpstan-ignore` comment:
+
+```php
+/** @phpstan-ignore match.unhandled (Result is sealed: Success|Failure) */
+return match (true) {
+    $result instanceof Success => 'success',
+    $result instanceof Failure => 'failure',
+};
+```
+
+The custom rule in this library ensures exhaustiveness, so it's safe to ignore `match.unhandled` for Result types.
+
