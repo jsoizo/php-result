@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- PHPStan type narrowing support for `isSuccess()` and `isFailure()` methods
+
 ### Changed
 - Changed `flatMap` type signature to allow callbacks returning Result with different error types
   - Before: `@param callable(T): Result<U, E> $fn` / `@return Result<U, E>`

@@ -8,6 +8,24 @@ use Jsoizo\Result\ResultException;
 use Jsoizo\Result\Success;
 
 describe('Success', function (): void {
+    describe('isSuccess', function (): void {
+        it('always returns true', function (): void {
+            $result = Result::success('value');
+
+            // @phpstan-ignore method.alreadyNarrowedType
+            expect($result->isSuccess())->toBeTrue();
+        });
+    });
+
+    describe('isFailure', function (): void {
+        it('always returns false', function (): void {
+            $result = Result::success('value');
+
+            // @phpstan-ignore method.impossibleType
+            expect($result->isFailure())->toBeFalse();
+        });
+    });
+
     describe('getOrElse', function (): void {
         it('returns value', function (): void {
             $result = Result::success(42);

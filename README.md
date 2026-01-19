@@ -103,6 +103,35 @@ Requirements:
 
 See: [PHPStan Sealed Classes](https://phpstan.org/writing-php-code/phpdocs-basics#sealed-classes)
 
+### Type Narrowing with isSuccess/isFailure
+
+The `isSuccess()` and `isFailure()` methods support [PHPStan type narrowing](https://phpstan.org/writing-php-code/narrowing-types):
+
+```php
+/** @param Result<User, ValidationError> $result */
+function handleResult(Result $result): void
+{
+    if ($result->isSuccess()) {
+        // PHPStan knows $result is Success<User, ValidationError>
+        $user = $result->getOrThrow();
+    } else {
+        // PHPStan knows $result is Failure<User, ValidationError>
+        $error = $result->getErrorOrThrow();
+    }
+}
+
+// Early return pattern
+/** @param Result<int, string> $result */
+function getValue(Result $result): int
+{
+    if ($result->isFailure()) {
+        return -1;
+    }
+    // PHPStan knows $result is Success<int, string>
+    return $result->getOrThrow();
+}
+```
+
 ### Match Exhaustiveness Check
 
 This library includes a custom PHPStan rule that ensures match expressions on Result types are exhaustive.

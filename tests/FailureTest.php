@@ -7,6 +7,24 @@ use Jsoizo\Result\Result;
 use Jsoizo\Result\ResultException;
 
 describe('Failure', function (): void {
+    describe('isSuccess', function (): void {
+        it('always returns false', function (): void {
+            $result = Result::failure('error');
+
+            // @phpstan-ignore method.impossibleType
+            expect($result->isSuccess())->toBeFalse();
+        });
+    });
+
+    describe('isFailure', function (): void {
+        it('always returns true', function (): void {
+            $result = Result::failure('error');
+
+            // @phpstan-ignore method.alreadyNarrowedType
+            expect($result->isFailure())->toBeTrue();
+        });
+    });
+
     describe('getOrElse', function (): void {
         it('returns default', function (): void {
             $result = Result::failure('error');
@@ -47,7 +65,6 @@ describe('Failure', function (): void {
             $result = Result::failure('error')->map(fn ($x) => $x * 2);
 
             expect($result)->toBeInstanceOf(Failure::class);
-            expect($result->isFailure())->toBeTrue();
         });
 
         it('callback is not called', function (): void {

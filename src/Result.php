@@ -76,6 +76,8 @@ abstract class Result
     /**
      * Checks whether this Result is a Success.
      *
+     * @phpstan-assert-if-true Success<T, E> $this
+     * @phpstan-assert-if-false Failure<T, E> $this
      * @return bool True if this is a Success, false if this is a Failure
      */
     abstract public function isSuccess(): bool;
@@ -83,6 +85,8 @@ abstract class Result
     /**
      * Checks whether this Result is a Failure.
      *
+     * @phpstan-assert-if-true Failure<T, E> $this
+     * @phpstan-assert-if-false Success<T, E> $this
      * @return bool True if this is a Failure, false if this is a Success
      */
     abstract public function isFailure(): bool;

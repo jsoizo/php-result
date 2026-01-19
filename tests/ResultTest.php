@@ -11,8 +11,6 @@ describe('Result::success', function (): void {
         $result = Result::success(42);
 
         expect($result)->toBeInstanceOf(Success::class);
-        expect($result->isSuccess())->toBeTrue();
-        expect($result->isFailure())->toBeFalse();
     });
 
     it('handles null value', function (): void {
@@ -28,8 +26,6 @@ describe('Result::failure', function (): void {
         $result = Result::failure('error');
 
         expect($result)->toBeInstanceOf(Failure::class);
-        expect($result->isSuccess())->toBeFalse();
-        expect($result->isFailure())->toBeTrue();
     });
 
     it('handles null error', function (): void {
