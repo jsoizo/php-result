@@ -49,6 +49,11 @@ $message = $result->fold(
     onSuccess: fn($value) => "Got: {$value}"
 );
 
+// Compose validations with flatMap
+$result = validateEmail($input['email'])
+    ->flatMap(fn($email) => validatePassword($input['password'])
+    ->flatMap(fn($password) => createUser($email, $password)));
+
 // Recover from failure with default value
 $recovered = $failure->recover(fn($e) => 'default'); // Success('default')
 
