@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Changed `flatMap` type signature to allow callbacks returning Result with different error types (Scala Either style)
+  - Before: `@param callable(T): Result<U, E> $fn` / `@return Result<U, E>`
+  - After: `@param callable(T): Result<U, F> $fn` / `@return Result<U, F>`
+
 ## [0.1.0] - 2025-01-19
 
 ### Added

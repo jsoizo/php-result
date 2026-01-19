@@ -108,8 +108,9 @@ final class Success extends Result
      * Applies the function to the contained value and returns its Result directly.
      *
      * @template U The success type of the resulting Result
-     * @param callable(T): Result<U, E> $fn The function returning a new Result
-     * @return Result<U, E> The Result returned by the function
+     * @template F The error type of the resulting Result
+     * @param callable(T): Result<U, F> $fn The function returning a new Result
+     * @return Result<U, F> The Result returned by the function
      */
     public function flatMap(callable $fn): Result
     {

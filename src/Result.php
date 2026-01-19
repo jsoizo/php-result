@@ -142,8 +142,9 @@ abstract class Result
      * returns the Failure unchanged.
      *
      * @template U The success type of the resulting Result
-     * @param callable(T): Result<U, E> $fn The function returning a new Result
-     * @return Result<U, E> The Result from the function, or the original Failure
+     * @template F The error type of the resulting Result
+     * @param callable(T): Result<U, F> $fn The function returning a new Result
+     * @return Result<U, F> The Result from the function, or the original Failure
      */
     abstract public function flatMap(callable $fn): Result;
 

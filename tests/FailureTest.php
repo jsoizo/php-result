@@ -52,9 +52,11 @@ describe('Failure', function (): void {
 
         it('callback is not called', function (): void {
             $called = false;
+            // @phpstan-ignore method.resultUnused (Testing that callback is not called)
             Result::failure('error')->map(function ($x) use (&$called): int {
                 $called = true;
 
+                // @phpstan-ignore return.never (Callback is never called on Failure)
                 return $x * 2;
             });
 
@@ -91,6 +93,7 @@ describe('Failure', function (): void {
 
         it('callback is not called', function (): void {
             $called = false;
+            // @phpstan-ignore method.resultUnused (Testing that callback is not called)
             Result::failure('error')->flatMap(function ($x) use (&$called) {
                 $called = true;
 

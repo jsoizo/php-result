@@ -75,6 +75,7 @@ describe('Success', function (): void {
 
         it('callback is not called', function (): void {
             $called = false;
+            // @phpstan-ignore method.resultUnused (Testing that callback is not called)
             Result::success(42)->mapError(function ($e) use (&$called): string {
                 $called = true;
 
@@ -164,6 +165,7 @@ describe('Success', function (): void {
 
         it('callback is not called', function (): void {
             $called = false;
+            // @phpstan-ignore method.resultUnused (Testing that callback is not called)
             Result::success(42)->recover(function ($e) use (&$called): int {
                 $called = true;
 
@@ -184,6 +186,7 @@ describe('Success', function (): void {
 
         it('callback is not called', function (): void {
             $called = false;
+            // @phpstan-ignore method.resultUnused (Testing that callback is not called)
             Result::success(42)->recoverWith(function ($e) use (&$called) {
                 $called = true;
 
