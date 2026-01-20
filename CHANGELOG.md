@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - PHPStan type narrowing support for `isSuccess()` and `isFailure()` methods
+- `tap()` and `tapError()` methods for side effects without modifying the Result
+- `getOrNull()` method for extracting value as nullable
+- `flatten()` method for flattening nested Results
 
 ### Changed
 - Minimum PHP version lowered to 8.1 (tests still require PHP 8.2+)

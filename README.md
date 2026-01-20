@@ -61,6 +61,19 @@ $recovered = $failure->recover(fn($e) => 'default'); // Success('default')
 $result = fetchFromPrimaryDb()
     ->recoverWith(fn($e) => fetchFromSecondaryDb())
     ->recoverWith(fn($e) => Result::success('cached fallback'));
+
+// Side effects for debugging/logging
+$result = validateInput($data)
+    ->tap(fn($v) => logger()->info("Valid: $v"))
+    ->tapError(fn($e) => logger()->error("Invalid: $e"))
+    ->flatMap(fn($v) => processData($v));
+
+// Get value as nullable
+$value = $result->getOrNull(); // T|null
+
+// Flatten nested Results
+$nested = Result::success(Result::success(42));
+$flat = $nested->flatten(); // Success(42)
 ```
 
 ## API
@@ -81,14 +94,18 @@ $result = fetchFromPrimaryDb()
 | `isFailure()` | Returns true if Failure |
 | `getOrElse($default)` | Get value or default |
 | `getOrThrow()` | Get value or throw |
+| `getOrNull()` | Get value or null |
 | `getErrorOrElse($default)` | Get error or default |
 | `getErrorOrThrow()` | Get error or throw LogicException |
 | `map($fn)` | Transform success value |
 | `mapError($fn)` | Transform error value |
 | `flatMap($fn)` | Chain Result-returning operations |
+| `flatten()` | Flatten nested Result |
 | `fold($onFailure, $onSuccess)` | Handle both cases and return a value |
 | `recover($fn)` | Recover from error with a value |
 | `recoverWith($fn)` | Recover from error with a Result |
+| `tap($fn)` | Execute side effect on success value |
+| `tapError($fn)` | Execute side effect on error value |
 
 ## PHPStan Integration
 
