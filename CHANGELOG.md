@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- `Result::binding()` for monad comprehension using generators (requires manual type annotations for yielded values)
 - PHPStan type narrowing support for `isSuccess()` and `isFailure()` methods
 - `tap()` and `tapError()` methods for side effects without modifying the Result
 - `getOrNull()` method for extracting value as nullable

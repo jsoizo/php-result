@@ -74,6 +74,16 @@ $value = $result->getOrNull(); // T|null
 // Flatten nested Results
 $nested = Result::success(Result::success(42));
 $flat = $nested->flatten(); // Success(42)
+
+// Monad comprehension with binding (avoids nested flatMap)
+$result = Result::binding(function () use ($orderId) {
+    /** @var Order $order */
+    $order = yield Result::catch(fn() => $orderRepo->find($orderId));
+    /** @var list<Item> $items */
+    $items = yield Result::catch(fn() => $order->loadItems());
+    return $items;
+});
+// Returns Result<list<Item>, Throwable> - short-circuits on first failure
 ```
 
 ## API
@@ -94,18 +104,14 @@ $flat = $nested->flatten(); // Success(42)
 | `isFailure()` | Returns true if Failure |
 | `getOrElse($default)` | Get value or default |
 | `getOrThrow()` | Get value or throw |
-| `getOrNull()` | Get value or null |
 | `getErrorOrElse($default)` | Get error or default |
 | `getErrorOrThrow()` | Get error or throw LogicException |
 | `map($fn)` | Transform success value |
 | `mapError($fn)` | Transform error value |
 | `flatMap($fn)` | Chain Result-returning operations |
-| `flatten()` | Flatten nested Result |
 | `fold($onFailure, $onSuccess)` | Handle both cases and return a value |
 | `recover($fn)` | Recover from error with a value |
 | `recoverWith($fn)` | Recover from error with a Result |
-| `tap($fn)` | Execute side effect on success value |
-| `tapError($fn)` | Execute side effect on error value |
 
 ## PHPStan Integration
 
