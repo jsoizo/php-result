@@ -307,4 +307,23 @@ describe('Failure', function (): void {
             expect($result->getOrNull())->toBeNull();
         });
     });
+
+    describe('flatten', function (): void {
+        it('returns same Failure unchanged', function (): void {
+            $result = Result::failure('error');
+            $flat = $result->flatten();
+
+            expect($flat)->toBeInstanceOf(Failure::class);
+            expect($flat->getErrorOrElse(''))->toBe('error');
+        });
+
+        it('preserves error type', function (): void {
+            $exception = new RuntimeException('error');
+            $result = Result::failure($exception);
+            $flat = $result->flatten();
+
+            expect($flat)->toBeInstanceOf(Failure::class);
+            expect($flat->getErrorOrElse(new RuntimeException('')))->toBe($exception);
+        });
+    });
 });

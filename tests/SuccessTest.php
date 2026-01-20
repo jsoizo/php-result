@@ -278,4 +278,39 @@ describe('Success', function (): void {
             expect($result->getOrNull())->toBe('hello');
         });
     });
+
+    describe('flatten', function (): void {
+        it('flattens nested Success', function (): void {
+            $nested = Result::success(Result::success(42));
+            $flat = $nested->flatten();
+
+            expect($flat)->toBeInstanceOf(Success::class);
+            expect($flat->getOrElse(0))->toBe(42);
+        });
+
+        it('flattens Success containing Failure', function (): void {
+            $nested = Result::success(Result::failure('error'));
+            $flat = $nested->flatten();
+
+            expect($flat)->toBeInstanceOf(Failure::class);
+            expect($flat->getErrorOrElse(''))->toBe('error');
+        });
+
+        it('returns same Success when value is not Result', function (): void {
+            $result = Result::success(42);
+            $flat = $result->flatten();
+
+            expect($flat)->toBeInstanceOf(Success::class);
+            expect($flat->getOrElse(0))->toBe(42);
+        });
+
+        it('works with deeply nested Results', function (): void {
+            $nested = Result::success(Result::success(Result::success(42)));
+            $flat = $nested->flatten();
+
+            expect($flat)->toBeInstanceOf(Success::class);
+            // Only one level is flattened
+            expect($flat->getOrElse(Result::success(0)))->toBeInstanceOf(Success::class);
+        });
+    });
 });

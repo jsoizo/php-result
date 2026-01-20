@@ -243,4 +243,15 @@ abstract class Result
      * @return T|null The success value or null
      */
     abstract public function getOrNull(): mixed;
+
+    /**
+     * Flattens a nested Result into a single Result.
+     *
+     * If the success value is itself a Result, unwraps it and returns the inner Result.
+     * If the success value is not a Result, returns this Result unchanged.
+     * For Failure, returns the Failure unchanged.
+     *
+     * @return Result<mixed, mixed> The flattened Result
+     */
+    abstract public function flatten(): Result;
 }

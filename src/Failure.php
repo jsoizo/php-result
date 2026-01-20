@@ -232,4 +232,16 @@ final class Failure extends Result
     {
         return null;
     }
+
+    /**
+     * {@inheritDoc}
+     *
+     * For Failure, returns this Failure unchanged.
+     *
+     * @return Failure<T, E> This Failure
+     */
+    public function flatten(): Result
+    {
+        return $this;
+    }
 }

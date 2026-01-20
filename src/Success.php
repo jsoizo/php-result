@@ -225,4 +225,20 @@ final class Success extends Result
     {
         return $this->value;
     }
+
+    /**
+     * {@inheritDoc}
+     *
+     * For Success, if the value is a Result, returns it. Otherwise returns this Success.
+     *
+     * @return Result<mixed, mixed> The inner Result or this Success
+     */
+    public function flatten(): Result
+    {
+        if ($this->value instanceof Result) {
+            return $this->value;
+        }
+
+        return $this;
+    }
 }
