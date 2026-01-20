@@ -74,6 +74,49 @@ abstract class Result
     }
 
     /**
+     * Enables monad comprehension syntax using generators.
+     *
+     * This method allows chaining multiple Result-returning operations in an
+     * imperative style, avoiding deeply nested flatMap calls. Each `yield`
+     * unwraps a Result value, and if any Result is a Failure, the entire
+     * binding short-circuits and returns that Failure.
+     *
+     * Usage:
+     * ```php
+     * $result = Result::binding(function() {
+     *     $x = yield $resultA; // unwraps Success or short-circuits on Failure
+     *     $y = yield $resultB;
+     *     return $x + $y;
+     * });
+     * ```
+     *
+     * @template TValue The return type of the generator
+     * @template TError The error type
+     * @param callable(): \Generator<int, Result<mixed, TError>, mixed, TValue> $fn
+     * @return Result<TValue, TError>
+     */
+    public static function binding(callable $fn): Result
+    {
+        $generator = $fn();
+
+        while ($generator->valid()) {
+            $result = $generator->current();
+
+            if ($result instanceof Failure) {
+                return $result;
+            }
+
+            if ($result instanceof Success) {
+                $generator->send($result->getOrThrow());
+            } else {
+                $generator->next();
+            }
+        }
+
+        return self::success($generator->getReturn());
+    }
+
+    /**
      * Checks whether this Result is a Success.
      *
      * @phpstan-assert-if-true Success<T, E> $this
