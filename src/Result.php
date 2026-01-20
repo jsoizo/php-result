@@ -108,8 +108,6 @@ abstract class Result
 
             if ($result instanceof Success) {
                 $generator->send($result->getOrThrow());
-            } else {
-                $generator->next();
             }
         }
 
