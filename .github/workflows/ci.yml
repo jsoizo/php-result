@@ -48,3 +48,20 @@ jobs:
 
       - name: Run tests
         run: composer test
+
+  compatibility-check:
+    runs-on: ubuntu-latest
+    name: PHP 8.1 Compatibility Check
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress
+
+      - name: Run PHP 8.1 compatibility check
+        run: composer compat

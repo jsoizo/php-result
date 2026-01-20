@@ -4,7 +4,7 @@
 [![CI](https://github.com/jsoizo/php-result/actions/workflows/ci.yml/badge.svg)](https://github.com/jsoizo/php-result/actions/workflows/ci.yml)
 [![License](https://img.shields.io/packagist/l/jsoizo/php-result.svg)](https://packagist.org/packages/jsoizo/php-result)
 
-A type-safe Result type for PHP 8.2+ with first-class PHPStan support.
+A type-safe Result type for PHP 8.1+ with first-class PHPStan support.
 
 ## Features
 
