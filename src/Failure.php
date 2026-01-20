@@ -192,4 +192,32 @@ final class Failure extends Result
     {
         return $fn($this->error);
     }
+
+    /**
+     * {@inheritDoc}
+     *
+     * For Failure, does nothing and returns this Failure unchanged.
+     *
+     * @param callable(T): void $fn The function (not executed)
+     * @return Result<T, E> This Failure unchanged
+     */
+    public function tap(callable $fn): Result
+    {
+        return $this;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * For Failure, executes the function with the error and returns this Failure.
+     *
+     * @param callable(E): void $fn The function to execute
+     * @return Result<T, E> This Failure unchanged
+     */
+    public function tapError(callable $fn): Result
+    {
+        $fn($this->error);
+
+        return $this;
+    }
 }

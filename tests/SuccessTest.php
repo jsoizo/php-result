@@ -217,4 +217,45 @@ describe('Success', function (): void {
             expect($called)->toBeFalse();
         });
     });
+
+    describe('tap', function (): void {
+        it('executes callback with value and returns same Success', function (): void {
+            $captured = null;
+            $result = Result::success(42)->tap(function ($v) use (&$captured): void {
+                $captured = $v;
+            });
+
+            expect($result)->toBeInstanceOf(Success::class);
+            expect($result->getOrElse(0))->toBe(42);
+            expect($captured)->toBe(42);
+        });
+
+        it('allows chaining', function (): void {
+            $log = [];
+            $result = Result::success(10)
+                ->tap(function ($v) use (&$log): void {
+                    $log[] = "got: $v";
+                })
+                ->map(fn ($v) => $v * 2)
+                ->tap(function ($v) use (&$log): void {
+                    $log[] = "doubled: $v";
+                });
+
+            expect($result->getOrElse(0))->toBe(20);
+            expect($log)->toBe(['got: 10', 'doubled: 20']);
+        });
+    });
+
+    describe('tapError', function (): void {
+        it('does not execute callback and returns same Success', function (): void {
+            $called = false;
+            $result = Result::success(42)->tapError(function ($e) use (&$called): void {
+                $called = true;
+            });
+
+            expect($result)->toBeInstanceOf(Success::class);
+            expect($result->getOrElse(0))->toBe(42);
+            expect($called)->toBeFalse();
+        });
+    });
 });

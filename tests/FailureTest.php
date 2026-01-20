@@ -252,4 +252,45 @@ describe('Failure', function (): void {
             expect(fn () => $result->getOrThrow())->toThrow(RuntimeException::class, 'string error');
         });
     });
+
+    describe('tap', function (): void {
+        it('does not execute callback and returns same Failure', function (): void {
+            $called = false;
+            $result = Result::failure('error')->tap(function ($v) use (&$called): void {
+                $called = true;
+            });
+
+            expect($result)->toBeInstanceOf(Failure::class);
+            expect($result->getErrorOrElse(''))->toBe('error');
+            expect($called)->toBeFalse();
+        });
+    });
+
+    describe('tapError', function (): void {
+        it('executes callback with error and returns same Failure', function (): void {
+            $captured = null;
+            $result = Result::failure('error message')->tapError(function ($e) use (&$captured): void {
+                $captured = $e;
+            });
+
+            expect($result)->toBeInstanceOf(Failure::class);
+            expect($result->getErrorOrElse(''))->toBe('error message');
+            expect($captured)->toBe('error message');
+        });
+
+        it('allows chaining', function (): void {
+            $log = [];
+            $result = Result::failure('error')
+                ->tapError(function ($e) use (&$log): void {
+                    $log[] = "error: $e";
+                })
+                ->mapError(fn ($e) => strtoupper($e))
+                ->tapError(function ($e) use (&$log): void {
+                    $log[] = "mapped: $e";
+                });
+
+            expect($result->getErrorOrElse(''))->toBe('ERROR');
+            expect($log)->toBe(['error: error', 'mapped: ERROR']);
+        });
+    });
 });

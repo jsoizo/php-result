@@ -209,4 +209,28 @@ abstract class Result
      * @return Result<T, E1> The Result from the function, or the original Success
      */
     abstract public function recoverWith(callable $fn): Result;
+
+    /**
+     * Executes a side effect with the success value without modifying the Result.
+     *
+     * If this is a Success, calls the function with the value and returns the
+     * same Success. If this is a Failure, returns the Failure unchanged.
+     * Useful for logging, debugging, or other side effects in a chain.
+     *
+     * @param callable(T): void $fn The function to execute with the success value
+     * @return Result<T, E> The same Result unchanged
+     */
+    abstract public function tap(callable $fn): Result;
+
+    /**
+     * Executes a side effect with the error value without modifying the Result.
+     *
+     * If this is a Failure, calls the function with the error and returns the
+     * same Failure. If this is a Success, returns the Success unchanged.
+     * Useful for logging, debugging, or other side effects in a chain.
+     *
+     * @param callable(E): void $fn The function to execute with the error value
+     * @return Result<T, E> The same Result unchanged
+     */
+    abstract public function tapError(callable $fn): Result;
 }

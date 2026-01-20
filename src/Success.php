@@ -185,4 +185,32 @@ final class Success extends Result
     {
         return $this;
     }
+
+    /**
+     * {@inheritDoc}
+     *
+     * For Success, executes the function with the value and returns this Success.
+     *
+     * @param callable(T): void $fn The function to execute
+     * @return Result<T, E> This Success unchanged
+     */
+    public function tap(callable $fn): Result
+    {
+        $fn($this->value);
+
+        return $this;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * For Success, does nothing and returns this Success unchanged.
+     *
+     * @param callable(E): void $fn The function (not executed)
+     * @return Result<T, E> This Success unchanged
+     */
+    public function tapError(callable $fn): Result
+    {
+        return $this;
+    }
 }
