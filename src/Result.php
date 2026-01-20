@@ -131,9 +131,9 @@ abstract class Result
      * If this is a Failure, applies the function to the error and wraps the result
      * in a new Failure. If this is a Success, returns the Success unchanged.
      *
-     * @template F The type of the transformed error
-     * @param callable(E): F $fn The error transformation function
-     * @return Result<T, F> A new Result with the transformed error, or the original Success
+     * @template E1 The type of the transformed error
+     * @param callable(E): E1 $fn The error transformation function
+     * @return Result<T, E1> A new Result with the transformed error, or the original Success
      */
     abstract public function mapError(callable $fn): Result;
 
@@ -144,10 +144,10 @@ abstract class Result
      * resulting Result directly (without wrapping). If this is a Failure,
      * returns the Failure unchanged.
      *
-     * @template U The success type of the resulting Result
-     * @template F The error type of the resulting Result
-     * @param callable(T): Result<U, F> $fn The function returning a new Result
-     * @return Result<U, F> The Result from the function, or the original Failure
+     * @template T1 The success type of the resulting Result
+     * @template E1 The error type of the resulting Result
+     * @param callable(T): Result<T1, E1> $fn The function returning a new Result
+     * @return Result<T1, E1> The Result from the function, or the original Failure
      */
     abstract public function flatMap(callable $fn): Result;
 
