@@ -258,4 +258,24 @@ describe('Success', function (): void {
             expect($called)->toBeFalse();
         });
     });
+
+    describe('getOrNull', function (): void {
+        it('returns value', function (): void {
+            $result = Result::success(42);
+
+            expect($result->getOrNull())->toBe(42);
+        });
+
+        it('returns null when value is null', function (): void {
+            $result = Result::success(null);
+
+            expect($result->getOrNull())->toBeNull();
+        });
+
+        it('returns string value', function (): void {
+            $result = Result::success('hello');
+
+            expect($result->getOrNull())->toBe('hello');
+        });
+    });
 });

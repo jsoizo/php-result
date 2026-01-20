@@ -233,4 +233,14 @@ abstract class Result
      * @return Result<T, E> The same Result unchanged
      */
     abstract public function tapError(callable $fn): Result;
+
+    /**
+     * Returns the success value, or null if this is a Failure.
+     *
+     * Provides a convenient way to extract the value with null as the default.
+     * For Success, returns the contained value. For Failure, returns null.
+     *
+     * @return T|null The success value or null
+     */
+    abstract public function getOrNull(): mixed;
 }

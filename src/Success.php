@@ -213,4 +213,16 @@ final class Success extends Result
     {
         return $this;
     }
+
+    /**
+     * {@inheritDoc}
+     *
+     * For Success, returns the contained value.
+     *
+     * @return T The success value
+     */
+    public function getOrNull(): mixed
+    {
+        return $this->value;
+    }
 }

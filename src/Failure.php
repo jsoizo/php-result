@@ -220,4 +220,16 @@ final class Failure extends Result
 
         return $this;
     }
+
+    /**
+     * {@inheritDoc}
+     *
+     * For Failure, returns null since there is no success value.
+     *
+     * @return null Always null
+     */
+    public function getOrNull(): mixed
+    {
+        return null;
+    }
 }

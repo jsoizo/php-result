@@ -293,4 +293,18 @@ describe('Failure', function (): void {
             expect($log)->toBe(['error: error', 'mapped: ERROR']);
         });
     });
+
+    describe('getOrNull', function (): void {
+        it('returns null', function (): void {
+            $result = Result::failure('error');
+
+            expect($result->getOrNull())->toBeNull();
+        });
+
+        it('returns null regardless of error type', function (): void {
+            $result = Result::failure(new RuntimeException('error'));
+
+            expect($result->getOrNull())->toBeNull();
+        });
+    });
 });
