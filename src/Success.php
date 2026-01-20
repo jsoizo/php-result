@@ -68,7 +68,7 @@ final class Success extends Result
      *
      * @return T The contained success value
      */
-    public function getOrThrow(): mixed
+    public function get(): mixed
     {
         return $this->value;
     }
@@ -139,7 +139,7 @@ final class Success extends Result
      * @return never This method never returns normally
      * @throws ResultException Always thrown for Success
      */
-    public function getErrorOrThrow(): never
+    public function getError(): never
     {
         throw new ResultException('Result is a success');
     }

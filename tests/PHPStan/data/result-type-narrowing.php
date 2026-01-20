@@ -57,7 +57,7 @@ function testEarlyReturn(Result $result): int
 
     assertType('Jsoizo\Result\Success<int, string>', $result);
 
-    return $result->getOrThrow();
+    return $result->get();
 }
 
 /**

@@ -107,7 +107,7 @@ abstract class Result
             }
 
             if ($result instanceof Success) {
-                $generator->send($result->getOrThrow());
+                $generator->send($result->get());
             }
         }
 
@@ -148,12 +148,12 @@ abstract class Result
      * Returns the success value, or throws an exception if this is a Failure.
      *
      * For Success, returns the contained value. For Failure, throws the error
-     * if it is a Throwable, or wraps it in a RuntimeException otherwise.
+     * if it is a Throwable, or wraps it in a ResultException otherwise.
      *
      * @return T The success value
      * @throws \Throwable
      */
-    abstract public function getOrThrow(): mixed;
+    abstract public function get(): mixed;
 
     /**
      * Transforms the success value using the given function.
@@ -208,13 +208,13 @@ abstract class Result
     /**
      * Returns the error value, or throws an exception if this is a Success.
      *
-     * For Failure, returns the contained error. For Success, throws a LogicException
+     * For Failure, returns the contained error. For Success, throws a ResultException
      * since attempting to get an error from a successful result is a programming error.
      *
      * @return E The error value
-     * @throws \LogicException If this is a Success
+     * @throws ResultException If this is a Success
      */
-    abstract public function getErrorOrThrow(): mixed;
+    abstract public function getError(): mixed;
 
     /**
      * Applies one of two functions depending on whether this is a Success or Failure.

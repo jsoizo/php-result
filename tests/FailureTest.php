@@ -41,24 +41,24 @@ describe('Failure', function (): void {
         });
     });
 
-    describe('getOrThrow', function (): void {
+    describe('get', function (): void {
         it('throws Throwable error', function (): void {
             $exception = new RuntimeException('oops');
             $result = Result::failure($exception);
 
-            expect(fn () => $result->getOrThrow())->toThrow(RuntimeException::class, 'oops');
+            expect(fn () => $result->get())->toThrow(RuntimeException::class, 'oops');
         });
 
         it('throws ResultException for non-Throwable error', function (): void {
             $result = Result::failure('error string');
 
-            expect(fn () => $result->getOrThrow())->toThrow(ResultException::class);
+            expect(fn () => $result->get())->toThrow(ResultException::class);
         });
 
         it('throws ResultException for array error', function (): void {
             $result = Result::failure(['code' => 404, 'message' => 'Not Found']);
 
-            expect(fn () => $result->getOrThrow())->toThrow(ResultException::class);
+            expect(fn () => $result->get())->toThrow(ResultException::class);
         });
     });
 
@@ -98,7 +98,7 @@ describe('Failure', function (): void {
                 ->mapError(fn ($e) => new RuntimeException($e));
 
             expect($result)->toBeInstanceOf(Failure::class);
-            expect(fn () => $result->getOrThrow())->toThrow(RuntimeException::class, 'not found');
+            expect(fn () => $result->get())->toThrow(RuntimeException::class, 'not found');
         });
     });
 
@@ -129,7 +129,7 @@ describe('Failure', function (): void {
                 ->flatMap(fn ($x) => Result::success($x))
                 ->flatMap(fn ($x) => Result::failure('new error'));
 
-            expect(fn () => $result->getOrThrow())->toThrow(RuntimeException::class, 'original');
+            expect(fn () => $result->get())->toThrow(RuntimeException::class, 'original');
         });
     });
 
@@ -153,24 +153,24 @@ describe('Failure', function (): void {
         });
     });
 
-    describe('getErrorOrThrow', function (): void {
+    describe('getError', function (): void {
         it('returns error', function (): void {
             $result = Result::failure('error message');
 
-            expect($result->getErrorOrThrow())->toBe('error message');
+            expect($result->getError())->toBe('error message');
         });
 
         it('returns exception error', function (): void {
             $exception = new RuntimeException('oops');
             $result = Result::failure($exception);
 
-            expect($result->getErrorOrThrow())->toBe($exception);
+            expect($result->getError())->toBe($exception);
         });
 
         it('returns null when error is null', function (): void {
             $result = Result::failure(null);
 
-            expect($result->getErrorOrThrow())->toBeNull();
+            expect($result->getError())->toBeNull();
         });
     });
 
@@ -249,7 +249,7 @@ describe('Failure', function (): void {
                 ->recoverWith(fn ($e) => Result::failure(new RuntimeException($e)));
 
             expect($result)->toBeInstanceOf(Failure::class);
-            expect(fn () => $result->getOrThrow())->toThrow(RuntimeException::class, 'string error');
+            expect(fn () => $result->get())->toThrow(RuntimeException::class, 'string error');
         });
     });
 

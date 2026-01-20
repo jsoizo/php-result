@@ -70,7 +70,7 @@ final class Failure extends Result
      * @return never This method never returns normally
      * @throws \Throwable
      */
-    public function getOrThrow(): never
+    public function get(): never
     {
         if ($this->error instanceof \Throwable) {
             throw $this->error;
@@ -145,7 +145,7 @@ final class Failure extends Result
      *
      * @return E The contained error value
      */
-    public function getErrorOrThrow(): mixed
+    public function getError(): mixed
     {
         return $this->error;
     }

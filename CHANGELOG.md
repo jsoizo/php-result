@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `flatten()` method for flattening nested Results
 
 ### Changed
+- Renamed `getOrThrow()` to `get()` for simpler API
+- Renamed `getErrorOrThrow()` to `getError()` for simpler API
 - Minimum PHP version lowered to 8.1 (tests still require PHP 8.2+)
 - Changed `getOrElse` type signature to require same type as success value
   - Before: `@param TDefault $default` / `@return T|TDefault`

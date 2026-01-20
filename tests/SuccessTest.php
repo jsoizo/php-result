@@ -46,17 +46,17 @@ describe('Success', function (): void {
         });
     });
 
-    describe('getOrThrow', function (): void {
+    describe('get', function (): void {
         it('returns value', function (): void {
             $result = Result::success(42);
 
-            expect($result->getOrThrow())->toBe(42);
+            expect($result->get())->toBe(42);
         });
 
         it('returns null when value is null', function (): void {
             $result = Result::success(null);
 
-            expect($result->getOrThrow())->toBeNull();
+            expect($result->get())->toBeNull();
         });
     });
 
@@ -161,17 +161,17 @@ describe('Success', function (): void {
         });
     });
 
-    describe('getErrorOrThrow', function (): void {
+    describe('getError', function (): void {
         it('throws ResultException', function (): void {
             $result = Result::success(42);
 
-            expect(fn () => $result->getErrorOrThrow())->toThrow(ResultException::class);
+            expect(fn () => $result->getError())->toThrow(ResultException::class);
         });
 
         it('throws ResultException with message', function (): void {
             $result = Result::success('value');
 
-            expect(fn () => $result->getErrorOrThrow())
+            expect(fn () => $result->getError())
                 ->toThrow(ResultException::class, 'Result is a success');
         });
     });

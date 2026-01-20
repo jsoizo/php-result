@@ -103,9 +103,9 @@ $result = Result::binding(function () use ($orderId) {
 | `isSuccess()` | Returns true if Success |
 | `isFailure()` | Returns true if Failure |
 | `getOrElse($default)` | Get value or default |
-| `getOrThrow()` | Get value or throw |
+| `get()` | Get value or throw |
 | `getErrorOrElse($default)` | Get error or default |
-| `getErrorOrThrow()` | Get error or throw LogicException |
+| `getError()` | Get error or throw ResultException |
 | `map($fn)` | Transform success value |
 | `mapError($fn)` | Transform error value |
 | `flatMap($fn)` | Chain Result-returning operations |
@@ -141,10 +141,10 @@ function handleResult(Result $result): void
 {
     if ($result->isSuccess()) {
         // PHPStan knows $result is Success<User, ValidationError>
-        $user = $result->getOrThrow();
+        $user = $result->get();
     } else {
         // PHPStan knows $result is Failure<User, ValidationError>
-        $error = $result->getErrorOrThrow();
+        $error = $result->getError();
     }
 }
 
@@ -156,7 +156,7 @@ function getValue(Result $result): int
         return -1;
     }
     // PHPStan knows $result is Success<int, string>
-    return $result->getOrThrow();
+    return $result->get();
 }
 ```
 
