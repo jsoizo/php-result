@@ -216,12 +216,17 @@ describe('Failure', function (): void {
         });
 
         it('chains multiple recoverWith', function (): void {
-            $result = Result::failure('error')
-                ->recoverWith(fn ($e) => Result::failure('still error'))
-                ->recoverWith(fn ($e) => Result::success('recovered'));
+            /** @var Failure<string, string> $failure */
+            $failure = Result::failure('error');
+            $result = $failure
+                ->recoverWith(function ($e): Result {
+                    /** @var Failure<string, string> */
+                    return Result::failure('still error');
+                })
+                ->recoverWith(fn ($e) => Result::success($e));
 
             expect($result)->toBeInstanceOf(\Jsoizo\Result\Success::class);
-            expect($result->getOrElse(''))->toBe('recovered');
+            expect($result->getOrElse(''))->toBe('still error');
         });
 
         it('stops at first Success', function (): void {

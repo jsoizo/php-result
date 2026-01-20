@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - PHPStan type narrowing support for `isSuccess()` and `isFailure()` methods
 
 ### Changed
-- Changed `getOrElse` type signature to require same type as success value (Rust-style)
+- Changed `getOrElse` type signature to require same type as success value
   - Before: `@param TDefault $default` / `@return T|TDefault`
   - After: `@param T $default` / `@return T`
 - Changed `getErrorOrElse` type signature to require same type as error value (symmetric with `getOrElse`)
@@ -19,7 +19,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - After: `@param E $default` / `@return E`
 - Changed `flatMap` type signature to allow callbacks returning Result with different error types
   - Before: `@param callable(T): Result<U, E> $fn` / `@return Result<U, E>`
-  - After: `@param callable(T): Result<U, F> $fn` / `@return Result<U, F>`
+  - After: `@param callable(T): Result<T1, E1> $fn` / `@return Result<T1, E1>`
+- Changed `recover` type signature to preserve original T type
+  - Before: `@param callable(E): T2 $fn` / `@return Result<T|T2, E>`
+  - After: `@param callable(E): T $fn` / `@return Result<T, E>`
+- Changed `recoverWith` type signature to preserve T but allow different error types (symmetric with `flatMap`)
+  - Before: `@param callable(E): Result<T2, F> $fn` / `@return Result<T|T2, F>`
+  - After: `@param callable(E): Result<T, E1> $fn` / `@return Result<T, E1>`
 
 ## [0.1.0] - 2025-01-19
 
