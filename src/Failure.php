@@ -11,8 +11,8 @@ namespace Jsoizo\Result;
  * It holds the error value and implements all Result operations to short-circuit
  * value transformations while allowing error transformations.
  *
- * @template T The type of the success value (unused, for type compatibility)
- * @template E The type of the error value
+ * @template-covariant T The type of the success value (unused, for type compatibility)
+ * @template-covariant E The type of the error value
  * @extends Result<T, E>
  */
 final class Failure extends Result
@@ -52,8 +52,9 @@ final class Failure extends Result
      *
      * For Failure, always returns the default value since there is no success value.
      *
-     * @param T $default The default value to return
-     * @return T The default value
+     * @template D
+     * @param D $default The default value to return
+     * @return D The default value
      */
     public function getOrElse(mixed $default): mixed
     {
@@ -128,7 +129,8 @@ final class Failure extends Result
      *
      * For Failure, always returns the contained error, ignoring the default.
      *
-     * @param E $default The default value (ignored)
+     * @template D
+     * @param D $default The default value (ignored)
      * @return E The contained error value
      */
     public function getErrorOrElse(mixed $default): mixed

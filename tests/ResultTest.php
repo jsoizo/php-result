@@ -112,7 +112,6 @@ describe('Result::fold', function (): void {
 
 describe('Result::binding', function (): void {
     it('chains successful Results', function (): void {
-        // @phpstan-ignore argument.type (Generator type inference is complex)
         $result = Result::binding(function () {
             /** @var int $x */
             $x = yield Result::success(10);
@@ -130,7 +129,6 @@ describe('Result::binding', function (): void {
 
     it('short-circuits on first Failure', function (): void {
         $secondCalled = false;
-        // @phpstan-ignore argument.type (Generator type inference is complex)
         $result = Result::binding(function () use (&$secondCalled) {
             /** @var int $x */
             $x = yield Result::success(10);
@@ -149,7 +147,6 @@ describe('Result::binding', function (): void {
     });
 
     it('returns Failure when first Result fails', function (): void {
-        // @phpstan-ignore argument.type (Generator type inference is complex)
         $result = Result::binding(function () {
             /** @var int $x */
             $x = yield Result::failure('first error');
@@ -164,7 +161,6 @@ describe('Result::binding', function (): void {
     });
 
     it('works with different types', function (): void {
-        // @phpstan-ignore argument.type (Generator type inference is complex)
         $result = Result::binding(function () {
             /** @var string $name */
             $name = yield Result::success('John');
@@ -175,12 +171,10 @@ describe('Result::binding', function (): void {
         });
 
         expect($result)->toBeInstanceOf(Success::class);
-        // @phpstan-ignore argument.type (Test uses empty string as default)
         expect($result->getOrElse(''))->toBe('John is 30 years old');
     });
 
     it('can use previous values in subsequent yields', function (): void {
-        // @phpstan-ignore argument.type (Generator type inference is complex)
         $result = Result::binding(function () {
             /** @var int $x */
             $x = yield Result::success(5);
@@ -197,7 +191,6 @@ describe('Result::binding', function (): void {
     });
 
     it('works with single yield', function (): void {
-        // @phpstan-ignore argument.type (Generator type inference is complex)
         $result = Result::binding(function () {
             /** @var int $x */
             $x = yield Result::success(42);

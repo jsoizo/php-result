@@ -11,8 +11,8 @@ namespace Jsoizo\Result;
  * that may fail. It provides a functional approach to error handling, avoiding
  * exceptions for expected failures while maintaining full type safety with PHPStan.
  *
- * @template T The type of the success value
- * @template E The type of the error value
+ * @template-covariant T The type of the success value
+ * @template-covariant E The type of the error value
  *
  * @phpstan-sealed Success<T, E>|Failure<T, E>
  *
@@ -140,8 +140,9 @@ abstract class Result
      * Provides a safe way to extract the value without risking exceptions.
      * For Success, returns the contained value. For Failure, returns the default.
      *
-     * @param T $default The value to return if this is a Failure
-     * @return T The success value or the default
+     * @template D
+     * @param D $default The value to return if this is a Failure
+     * @return T|D The success value or the default
      */
     abstract public function getOrElse(mixed $default): mixed;
 
@@ -200,8 +201,9 @@ abstract class Result
      * Provides a safe way to extract the error without risking exceptions.
      * For Failure, returns the contained error. For Success, returns the default.
      *
-     * @param E $default The value to return if this is a Success
-     * @return E The error value or the default
+     * @template D
+     * @param D $default The value to return if this is a Success
+     * @return E|D The error value or the default
      */
     abstract public function getErrorOrElse(mixed $default): mixed;
 
@@ -237,6 +239,8 @@ abstract class Result
      *
      * @param callable(E): T $fn The recovery function
      * @return Result<T, E> A new Success with the recovered value, or the original Success
+     *
+     * @phpstan-ignore generics.variance (T is covariant but used in contravariant position in callable parameter for practical API design)
      */
     abstract public function recover(callable $fn): Result;
 
@@ -250,6 +254,8 @@ abstract class Result
      * @template E1 The error type of the resulting Result
      * @param callable(E): Result<T, E1> $fn The recovery function returning a new Result
      * @return Result<T, E1> The Result from the function, or the original Success
+     *
+     * @phpstan-ignore generics.variance (T is covariant but used in contravariant position in callable parameter for practical API design)
      */
     abstract public function recoverWith(callable $fn): Result;
 
