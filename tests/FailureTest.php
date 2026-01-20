@@ -27,12 +27,14 @@ describe('Failure', function (): void {
 
     describe('getOrElse', function (): void {
         it('returns default', function (): void {
+            /** @var Failure<int, string> $result */
             $result = Result::failure('error');
 
             expect($result->getOrElse(42))->toBe(42);
         });
 
         it('returns null default', function (): void {
+            /** @var Failure<null, string> $result */
             $result = Result::failure('error');
 
             expect($result->getOrElse(null))->toBeNull();
@@ -87,6 +89,7 @@ describe('Failure', function (): void {
                 ->mapError(fn ($e) => strtoupper($e));
 
             expect($result)->toBeInstanceOf(Failure::class);
+            /** @var Failure<null, string> $result */
             expect($result->getOrElse(null))->toBeNull();
         });
 

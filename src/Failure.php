@@ -52,9 +52,8 @@ final class Failure extends Result
      *
      * For Failure, always returns the default value since there is no success value.
      *
-     * @template TDefault The type of the default value
-     * @param TDefault $default The default value to return
-     * @return TDefault The default value
+     * @param T $default The default value to return
+     * @return T The default value
      */
     public function getOrElse(mixed $default): mixed
     {

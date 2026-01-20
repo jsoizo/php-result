@@ -52,8 +52,7 @@ final class Success extends Result
      *
      * For Success, always returns the contained value, ignoring the default.
      *
-     * @template TDefault The type of the default value (unused)
-     * @param TDefault $default The default value (ignored)
+     * @param T $default The default value (ignored)
      * @return T The contained success value
      */
     public function getOrElse(mixed $default): mixed

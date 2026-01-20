@@ -42,7 +42,7 @@ describe('Success', function (): void {
         it('returns null when value is null', function (): void {
             $result = Result::success(null);
 
-            expect($result->getOrElse('default'))->toBeNull();
+            expect($result->getOrElse(null))->toBeNull();
         });
     });
 
@@ -77,6 +77,7 @@ describe('Success', function (): void {
         });
 
         it('transforms type', function (): void {
+            /** @var Success<string, never> $result */
             $result = Result::success(42)->map(fn ($x) => (string) $x);
 
             expect($result->getOrElse(''))->toBe('42');

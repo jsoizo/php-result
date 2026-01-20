@@ -17,7 +17,7 @@ describe('Result::success', function (): void {
         $result = Result::success(null);
 
         expect($result)->toBeInstanceOf(Success::class);
-        expect($result->getOrElse('default'))->toBeNull();
+        expect($result->getOrElse(null))->toBeNull();
     });
 });
 
