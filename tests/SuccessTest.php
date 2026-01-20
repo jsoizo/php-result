@@ -147,12 +147,14 @@ describe('Success', function (): void {
 
     describe('getErrorOrElse', function (): void {
         it('returns default', function (): void {
+            /** @var Success<int, string> $result */
             $result = Result::success(42);
 
             expect($result->getErrorOrElse('default error'))->toBe('default error');
         });
 
         it('returns null default', function (): void {
+            /** @var Success<int, null> $result */
             $result = Result::success(42);
 
             expect($result->getErrorOrElse(null))->toBeNull();

@@ -128,8 +128,7 @@ final class Failure extends Result
      *
      * For Failure, always returns the contained error, ignoring the default.
      *
-     * @template TDefault The type of the default value (unused)
-     * @param TDefault $default The default value (ignored)
+     * @param E $default The default value (ignored)
      * @return E The contained error value
      */
     public function getErrorOrElse(mixed $default): mixed

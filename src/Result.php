@@ -157,9 +157,8 @@ abstract class Result
      * Provides a safe way to extract the error without risking exceptions.
      * For Failure, returns the contained error. For Success, returns the default.
      *
-     * @template TDefault The type of the default value
-     * @param TDefault $default The value to return if this is a Success
-     * @return E|TDefault The error value or the default
+     * @param E $default The value to return if this is a Success
+     * @return E The error value or the default
      */
     abstract public function getErrorOrElse(mixed $default): mixed;
 

@@ -121,9 +121,8 @@ final class Success extends Result
      *
      * For Success, always returns the default value since there is no error.
      *
-     * @template TDefault The type of the default value
-     * @param TDefault $default The default value to return
-     * @return TDefault The default value
+     * @param E $default The default value to return
+     * @return E The default value
      */
     public function getErrorOrElse(mixed $default): mixed
     {

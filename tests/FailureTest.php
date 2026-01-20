@@ -143,13 +143,13 @@ describe('Failure', function (): void {
         it('ignores default for error value', function (): void {
             $result = Result::failure(['code' => 404]);
 
-            expect($result->getErrorOrElse('default'))->toBe(['code' => 404]);
+            expect($result->getErrorOrElse(['code' => 0]))->toBe(['code' => 404]);
         });
 
         it('returns null when error is null', function (): void {
             $result = Result::failure(null);
 
-            expect($result->getErrorOrElse('default'))->toBeNull();
+            expect($result->getErrorOrElse(null))->toBeNull();
         });
     });
 
