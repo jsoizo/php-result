@@ -176,22 +176,26 @@ describe('Failure', function (): void {
 
     describe('recover', function (): void {
         it('transforms error to value', function (): void {
-            $result = Result::failure('error')->recover(fn ($e) => 42);
+            /** @var Failure<int, string> $failure */
+            $failure = Result::failure('error');
+            $result = $failure->recover(fn ($e) => 42);
 
             expect($result)->toBeInstanceOf(\Jsoizo\Result\Success::class);
             expect($result->getOrElse(0))->toBe(42);
         });
 
         it('receives error value', function (): void {
-            $result = Result::failure('error message')
-                ->recover(fn ($e) => strlen($e));
+            /** @var Failure<int, string> $failure */
+            $failure = Result::failure('error message');
+            $result = $failure->recover(fn ($e) => strlen($e));
 
             expect($result->getOrElse(0))->toBe(13);
         });
 
         it('can use error to compute recovery value', function (): void {
-            $result = Result::failure(new RuntimeException('not found'))
-                ->recover(fn ($e) => 'default value');
+            /** @var Failure<string, RuntimeException> $failure */
+            $failure = Result::failure(new RuntimeException('not found'));
+            $result = $failure->recover(fn ($e) => 'default value');
 
             expect($result)->toBeInstanceOf(\Jsoizo\Result\Success::class);
             expect($result->getOrElse(''))->toBe('default value');
@@ -200,8 +204,9 @@ describe('Failure', function (): void {
 
     describe('recoverWith', function (): void {
         it('transforms error to Result', function (): void {
-            $result = Result::failure('error')
-                ->recoverWith(fn ($e) => Result::success(42));
+            /** @var Failure<int, string> $failure */
+            $failure = Result::failure('error');
+            $result = $failure->recoverWith(fn ($e) => Result::success(42));
 
             expect($result)->toBeInstanceOf(\Jsoizo\Result\Success::class);
             expect($result->getOrElse(0))->toBe(42);
@@ -231,7 +236,9 @@ describe('Failure', function (): void {
 
         it('stops at first Success', function (): void {
             $secondCalled = false;
-            $result = Result::failure('error')
+            /** @var Failure<string, string> $failure */
+            $failure = Result::failure('error');
+            $result = $failure
                 ->recoverWith(fn ($e) => Result::success('recovered'))
                 ->recoverWith(function ($e) use (&$secondCalled) {
                     $secondCalled = true;

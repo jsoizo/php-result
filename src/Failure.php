@@ -170,13 +170,14 @@ final class Failure extends Result
      *
      * Applies the function to the contained error and wraps the result in a new Success.
      *
-     * @template T2 The type of the recovered value
-     * @param callable(E): T2 $fn The recovery function
-     * @return Success<T2, E> A new Success containing the recovered value
+     * @param callable(E): T $fn The recovery function
+     * @return Success<T, E> A new Success containing the recovered value
+     *
+     * @phpstan-ignore generics.variance (T is covariant but used in contravariant position in callable parameter for practical API design)
      */
     public function recover(callable $fn): Success
     {
-        /** @var Success<T2, E> */
+        /** @var Success<T, E> */
         return new Success($fn($this->error));
     }
 
@@ -185,10 +186,11 @@ final class Failure extends Result
      *
      * Applies the function to the contained error and returns the resulting Result directly.
      *
-     * @template T2 The success type of the resulting Result
-     * @template F The error type of the resulting Result
-     * @param callable(E): Result<T2, F> $fn The recovery function returning a new Result
-     * @return Result<T2, F> The Result returned by the function
+     * @template E1 The error type of the resulting Result
+     * @param callable(E): Result<T, E1> $fn The recovery function returning a new Result
+     * @return Result<T, E1> The Result returned by the function
+     *
+     * @phpstan-ignore generics.variance (T is covariant but used in contravariant position in callable parameter for practical API design)
      */
     public function recoverWith(callable $fn): Result
     {

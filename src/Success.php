@@ -164,9 +164,10 @@ final class Success extends Result
      *
      * For Success, returns this instance unchanged since there is no error to recover from.
      *
-     * @template T2 The type of the recovered value (unused)
-     * @param callable(E): T2 $fn The recovery function (not called)
+     * @param callable(E): T $fn The recovery function (not called)
      * @return Success<T, E> This Success instance
+     *
+     * @phpstan-ignore generics.variance (T is covariant but used in contravariant position in callable parameter for practical API design)
      */
     public function recover(callable $fn): Success
     {
@@ -178,10 +179,11 @@ final class Success extends Result
      *
      * For Success, returns this instance unchanged since there is no error to recover from.
      *
-     * @template T2 The success type of the resulting Result (unused)
-     * @template F The error type of the resulting Result (unused)
-     * @param callable(E): Result<T2, F> $fn The recovery function (not called)
-     * @return Success<T, F> This Success instance (type-widened for compatibility)
+     * @template E1 The error type of the resulting Result (unused)
+     * @param callable(E): Result<T, E1> $fn The recovery function (not called)
+     * @return Success<T, E> This Success instance
+     *
+     * @phpstan-ignore generics.variance (T is covariant but used in contravariant position in callable parameter for practical API design)
      */
     public function recoverWith(callable $fn): Success
     {
