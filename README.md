@@ -95,6 +95,7 @@ $result = Result::binding(function () use ($orderId) {
 | `Result::success($value)` | Create a Success |
 | `Result::failure($error)` | Create a Failure |
 | `Result::catch(callable $fn)` | Wrap exception-throwing code |
+| `Result::binding(callable $fn)` | Monad comprehension using generators |
 
 ### Instance Methods
 
@@ -112,6 +113,10 @@ $result = Result::binding(function () use ($orderId) {
 | `fold($onFailure, $onSuccess)` | Handle both cases and return a value |
 | `recover($fn)` | Recover from error with a value |
 | `recoverWith($fn)` | Recover from error with a Result |
+| `tap($fn)` | Execute side effect on success value, return same Result |
+| `tapError($fn)` | Execute side effect on error value, return same Result |
+| `getOrNull()` | Get success value or null |
+| `flatten()` | Flatten nested `Result<Result<T, E>, E>` into `Result<T, E>` |
 
 ## PHPStan Integration
 

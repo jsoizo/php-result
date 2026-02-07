@@ -1,6 +1,6 @@
 {
     "name": "jsoizo/php-result",
-    "description": "A type-safe Result type for PHP 8.2+ with first-class PHPStan support.",
+    "description": "A type-safe Result type for PHP 8.1+ with PHPStan support.",
     "type": "library",
     "license": "MIT",
     "keywords": [
