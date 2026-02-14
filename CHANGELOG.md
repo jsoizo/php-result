@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- `Result::accumulate2()` through `Result::accumulate9()` for combining multiple Results with error accumulation
+
 ## [0.2.1] - 2026-02-06
 
 ### Fixed

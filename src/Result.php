@@ -115,6 +115,442 @@ abstract class Result
     }
 
     /**
+     * Combines two Results, collecting all errors on failure.
+     *
+     * Executes all callables and collects their Results. If all are Success,
+     * applies the transform function to their values and returns a Success.
+     * If any are Failure, collects all errors into a non-empty list.
+     *
+     * @template T1
+     * @template T2
+     * @template E1
+     * @template U
+     * @param callable(): Result<T1, E1> $fn1
+     * @param callable(): Result<T2, E1> $fn2
+     * @param callable(T1, T2): U $transform
+     * @return Result<U, non-empty-list<E1>>
+     */
+    public static function accumulate2(callable $fn1, callable $fn2, callable $transform): Result
+    {
+        $r1 = $fn1();
+        $r2 = $fn2();
+
+        $errors = [];
+        if ($r1 instanceof Failure) {
+            $errors[] = $r1->getError();
+        }
+        if ($r2 instanceof Failure) {
+            $errors[] = $r2->getError();
+        }
+
+        if (!empty($errors)) {
+            /** @var non-empty-list<E1> $errors */
+            return self::failure($errors);
+        }
+
+        return self::success($transform($r1->get(), $r2->get()));
+    }
+
+    /**
+     * Combines three Results, collecting all errors on failure.
+     *
+     * @template T1
+     * @template T2
+     * @template T3
+     * @template E1
+     * @template U
+     * @param callable(): Result<T1, E1> $fn1
+     * @param callable(): Result<T2, E1> $fn2
+     * @param callable(): Result<T3, E1> $fn3
+     * @param callable(T1, T2, T3): U $transform
+     * @return Result<U, non-empty-list<E1>>
+     */
+    public static function accumulate3(callable $fn1, callable $fn2, callable $fn3, callable $transform): Result
+    {
+        $r1 = $fn1();
+        $r2 = $fn2();
+        $r3 = $fn3();
+
+        $errors = [];
+        if ($r1 instanceof Failure) {
+            $errors[] = $r1->getError();
+        }
+        if ($r2 instanceof Failure) {
+            $errors[] = $r2->getError();
+        }
+        if ($r3 instanceof Failure) {
+            $errors[] = $r3->getError();
+        }
+
+        if (!empty($errors)) {
+            /** @var non-empty-list<E1> $errors */
+            return self::failure($errors);
+        }
+
+        return self::success($transform($r1->get(), $r2->get(), $r3->get()));
+    }
+
+    /**
+     * Combines four Results, collecting all errors on failure.
+     *
+     * @template T1
+     * @template T2
+     * @template T3
+     * @template T4
+     * @template E1
+     * @template U
+     * @param callable(): Result<T1, E1> $fn1
+     * @param callable(): Result<T2, E1> $fn2
+     * @param callable(): Result<T3, E1> $fn3
+     * @param callable(): Result<T4, E1> $fn4
+     * @param callable(T1, T2, T3, T4): U $transform
+     * @return Result<U, non-empty-list<E1>>
+     */
+    public static function accumulate4(callable $fn1, callable $fn2, callable $fn3, callable $fn4, callable $transform): Result
+    {
+        $r1 = $fn1();
+        $r2 = $fn2();
+        $r3 = $fn3();
+        $r4 = $fn4();
+
+        $errors = [];
+        if ($r1 instanceof Failure) {
+            $errors[] = $r1->getError();
+        }
+        if ($r2 instanceof Failure) {
+            $errors[] = $r2->getError();
+        }
+        if ($r3 instanceof Failure) {
+            $errors[] = $r3->getError();
+        }
+        if ($r4 instanceof Failure) {
+            $errors[] = $r4->getError();
+        }
+
+        if (!empty($errors)) {
+            /** @var non-empty-list<E1> $errors */
+            return self::failure($errors);
+        }
+
+        return self::success($transform($r1->get(), $r2->get(), $r3->get(), $r4->get()));
+    }
+
+    /**
+     * Combines five Results, collecting all errors on failure.
+     *
+     * @template T1
+     * @template T2
+     * @template T3
+     * @template T4
+     * @template T5
+     * @template E1
+     * @template U
+     * @param callable(): Result<T1, E1> $fn1
+     * @param callable(): Result<T2, E1> $fn2
+     * @param callable(): Result<T3, E1> $fn3
+     * @param callable(): Result<T4, E1> $fn4
+     * @param callable(): Result<T5, E1> $fn5
+     * @param callable(T1, T2, T3, T4, T5): U $transform
+     * @return Result<U, non-empty-list<E1>>
+     */
+    public static function accumulate5(callable $fn1, callable $fn2, callable $fn3, callable $fn4, callable $fn5, callable $transform): Result
+    {
+        $r1 = $fn1();
+        $r2 = $fn2();
+        $r3 = $fn3();
+        $r4 = $fn4();
+        $r5 = $fn5();
+
+        $errors = [];
+        if ($r1 instanceof Failure) {
+            $errors[] = $r1->getError();
+        }
+        if ($r2 instanceof Failure) {
+            $errors[] = $r2->getError();
+        }
+        if ($r3 instanceof Failure) {
+            $errors[] = $r3->getError();
+        }
+        if ($r4 instanceof Failure) {
+            $errors[] = $r4->getError();
+        }
+        if ($r5 instanceof Failure) {
+            $errors[] = $r5->getError();
+        }
+
+        if (!empty($errors)) {
+            /** @var non-empty-list<E1> $errors */
+            return self::failure($errors);
+        }
+
+        return self::success($transform($r1->get(), $r2->get(), $r3->get(), $r4->get(), $r5->get()));
+    }
+
+    /**
+     * Combines six Results, collecting all errors on failure.
+     *
+     * @template T1
+     * @template T2
+     * @template T3
+     * @template T4
+     * @template T5
+     * @template T6
+     * @template E1
+     * @template U
+     * @param callable(): Result<T1, E1> $fn1
+     * @param callable(): Result<T2, E1> $fn2
+     * @param callable(): Result<T3, E1> $fn3
+     * @param callable(): Result<T4, E1> $fn4
+     * @param callable(): Result<T5, E1> $fn5
+     * @param callable(): Result<T6, E1> $fn6
+     * @param callable(T1, T2, T3, T4, T5, T6): U $transform
+     * @return Result<U, non-empty-list<E1>>
+     */
+    public static function accumulate6(callable $fn1, callable $fn2, callable $fn3, callable $fn4, callable $fn5, callable $fn6, callable $transform): Result
+    {
+        $r1 = $fn1();
+        $r2 = $fn2();
+        $r3 = $fn3();
+        $r4 = $fn4();
+        $r5 = $fn5();
+        $r6 = $fn6();
+
+        $errors = [];
+        if ($r1 instanceof Failure) {
+            $errors[] = $r1->getError();
+        }
+        if ($r2 instanceof Failure) {
+            $errors[] = $r2->getError();
+        }
+        if ($r3 instanceof Failure) {
+            $errors[] = $r3->getError();
+        }
+        if ($r4 instanceof Failure) {
+            $errors[] = $r4->getError();
+        }
+        if ($r5 instanceof Failure) {
+            $errors[] = $r5->getError();
+        }
+        if ($r6 instanceof Failure) {
+            $errors[] = $r6->getError();
+        }
+
+        if (!empty($errors)) {
+            /** @var non-empty-list<E1> $errors */
+            return self::failure($errors);
+        }
+
+        return self::success($transform($r1->get(), $r2->get(), $r3->get(), $r4->get(), $r5->get(), $r6->get()));
+    }
+
+    /**
+     * Combines seven Results, collecting all errors on failure.
+     *
+     * @template T1
+     * @template T2
+     * @template T3
+     * @template T4
+     * @template T5
+     * @template T6
+     * @template T7
+     * @template E1
+     * @template U
+     * @param callable(): Result<T1, E1> $fn1
+     * @param callable(): Result<T2, E1> $fn2
+     * @param callable(): Result<T3, E1> $fn3
+     * @param callable(): Result<T4, E1> $fn4
+     * @param callable(): Result<T5, E1> $fn5
+     * @param callable(): Result<T6, E1> $fn6
+     * @param callable(): Result<T7, E1> $fn7
+     * @param callable(T1, T2, T3, T4, T5, T6, T7): U $transform
+     * @return Result<U, non-empty-list<E1>>
+     */
+    public static function accumulate7(callable $fn1, callable $fn2, callable $fn3, callable $fn4, callable $fn5, callable $fn6, callable $fn7, callable $transform): Result
+    {
+        $r1 = $fn1();
+        $r2 = $fn2();
+        $r3 = $fn3();
+        $r4 = $fn4();
+        $r5 = $fn5();
+        $r6 = $fn6();
+        $r7 = $fn7();
+
+        $errors = [];
+        if ($r1 instanceof Failure) {
+            $errors[] = $r1->getError();
+        }
+        if ($r2 instanceof Failure) {
+            $errors[] = $r2->getError();
+        }
+        if ($r3 instanceof Failure) {
+            $errors[] = $r3->getError();
+        }
+        if ($r4 instanceof Failure) {
+            $errors[] = $r4->getError();
+        }
+        if ($r5 instanceof Failure) {
+            $errors[] = $r5->getError();
+        }
+        if ($r6 instanceof Failure) {
+            $errors[] = $r6->getError();
+        }
+        if ($r7 instanceof Failure) {
+            $errors[] = $r7->getError();
+        }
+
+        if (!empty($errors)) {
+            /** @var non-empty-list<E1> $errors */
+            return self::failure($errors);
+        }
+
+        return self::success($transform($r1->get(), $r2->get(), $r3->get(), $r4->get(), $r5->get(), $r6->get(), $r7->get()));
+    }
+
+    /**
+     * Combines eight Results, collecting all errors on failure.
+     *
+     * @template T1
+     * @template T2
+     * @template T3
+     * @template T4
+     * @template T5
+     * @template T6
+     * @template T7
+     * @template T8
+     * @template E1
+     * @template U
+     * @param callable(): Result<T1, E1> $fn1
+     * @param callable(): Result<T2, E1> $fn2
+     * @param callable(): Result<T3, E1> $fn3
+     * @param callable(): Result<T4, E1> $fn4
+     * @param callable(): Result<T5, E1> $fn5
+     * @param callable(): Result<T6, E1> $fn6
+     * @param callable(): Result<T7, E1> $fn7
+     * @param callable(): Result<T8, E1> $fn8
+     * @param callable(T1, T2, T3, T4, T5, T6, T7, T8): U $transform
+     * @return Result<U, non-empty-list<E1>>
+     */
+    public static function accumulate8(callable $fn1, callable $fn2, callable $fn3, callable $fn4, callable $fn5, callable $fn6, callable $fn7, callable $fn8, callable $transform): Result
+    {
+        $r1 = $fn1();
+        $r2 = $fn2();
+        $r3 = $fn3();
+        $r4 = $fn4();
+        $r5 = $fn5();
+        $r6 = $fn6();
+        $r7 = $fn7();
+        $r8 = $fn8();
+
+        $errors = [];
+        if ($r1 instanceof Failure) {
+            $errors[] = $r1->getError();
+        }
+        if ($r2 instanceof Failure) {
+            $errors[] = $r2->getError();
+        }
+        if ($r3 instanceof Failure) {
+            $errors[] = $r3->getError();
+        }
+        if ($r4 instanceof Failure) {
+            $errors[] = $r4->getError();
+        }
+        if ($r5 instanceof Failure) {
+            $errors[] = $r5->getError();
+        }
+        if ($r6 instanceof Failure) {
+            $errors[] = $r6->getError();
+        }
+        if ($r7 instanceof Failure) {
+            $errors[] = $r7->getError();
+        }
+        if ($r8 instanceof Failure) {
+            $errors[] = $r8->getError();
+        }
+
+        if (!empty($errors)) {
+            /** @var non-empty-list<E1> $errors */
+            return self::failure($errors);
+        }
+
+        return self::success($transform($r1->get(), $r2->get(), $r3->get(), $r4->get(), $r5->get(), $r6->get(), $r7->get(), $r8->get()));
+    }
+
+    /**
+     * Combines nine Results, collecting all errors on failure.
+     *
+     * @template T1
+     * @template T2
+     * @template T3
+     * @template T4
+     * @template T5
+     * @template T6
+     * @template T7
+     * @template T8
+     * @template T9
+     * @template E1
+     * @template U
+     * @param callable(): Result<T1, E1> $fn1
+     * @param callable(): Result<T2, E1> $fn2
+     * @param callable(): Result<T3, E1> $fn3
+     * @param callable(): Result<T4, E1> $fn4
+     * @param callable(): Result<T5, E1> $fn5
+     * @param callable(): Result<T6, E1> $fn6
+     * @param callable(): Result<T7, E1> $fn7
+     * @param callable(): Result<T8, E1> $fn8
+     * @param callable(): Result<T9, E1> $fn9
+     * @param callable(T1, T2, T3, T4, T5, T6, T7, T8, T9): U $transform
+     * @return Result<U, non-empty-list<E1>>
+     */
+    public static function accumulate9(callable $fn1, callable $fn2, callable $fn3, callable $fn4, callable $fn5, callable $fn6, callable $fn7, callable $fn8, callable $fn9, callable $transform): Result
+    {
+        $r1 = $fn1();
+        $r2 = $fn2();
+        $r3 = $fn3();
+        $r4 = $fn4();
+        $r5 = $fn5();
+        $r6 = $fn6();
+        $r7 = $fn7();
+        $r8 = $fn8();
+        $r9 = $fn9();
+
+        $errors = [];
+        if ($r1 instanceof Failure) {
+            $errors[] = $r1->getError();
+        }
+        if ($r2 instanceof Failure) {
+            $errors[] = $r2->getError();
+        }
+        if ($r3 instanceof Failure) {
+            $errors[] = $r3->getError();
+        }
+        if ($r4 instanceof Failure) {
+            $errors[] = $r4->getError();
+        }
+        if ($r5 instanceof Failure) {
+            $errors[] = $r5->getError();
+        }
+        if ($r6 instanceof Failure) {
+            $errors[] = $r6->getError();
+        }
+        if ($r7 instanceof Failure) {
+            $errors[] = $r7->getError();
+        }
+        if ($r8 instanceof Failure) {
+            $errors[] = $r8->getError();
+        }
+        if ($r9 instanceof Failure) {
+            $errors[] = $r9->getError();
+        }
+
+        if (!empty($errors)) {
+            /** @var non-empty-list<E1> $errors */
+            return self::failure($errors);
+        }
+
+        return self::success($transform($r1->get(), $r2->get(), $r3->get(), $r4->get(), $r5->get(), $r6->get(), $r7->get(), $r8->get(), $r9->get()));
+    }
+
+    /**
      * Checks whether this Result is a Success.
      *
      * @phpstan-assert-if-true Success<T, E> $this

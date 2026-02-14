@@ -84,6 +84,16 @@ $result = Result::binding(function () use ($orderId) {
     return $items;
 });
 // Returns Result<list<Item>, Throwable> - short-circuits on first failure
+
+// Accumulate errors from multiple independent validations
+$result = Result::accumulate3(
+    fn() => validateName($input['name']),
+    fn() => validateAge($input['age']),
+    fn() => validateEmail($input['email']),
+    fn(string $name, int $age, string $email) => new User($name, $age, $email)
+);
+// All Success → Success(User(...))
+// Any Failure → Failure(['Name required', 'Invalid email']) (non-empty-list of errors)
 ```
 
 ## API
@@ -96,6 +106,14 @@ $result = Result::binding(function () use ($orderId) {
 | `Result::failure($error)` | Create a Failure |
 | `Result::catch(callable $fn)` | Wrap exception-throwing code |
 | `Result::binding(callable $fn)` | Monad comprehension using generators |
+| `Result::accumulate2($fn1, ..., $transform)` | Combine 2 Results, collecting all errors |
+| `Result::accumulate3($fn1, ..., $transform)` | Combine 3 Results, collecting all errors |
+| `Result::accumulate4($fn1, ..., $transform)` | Combine 4 Results, collecting all errors |
+| `Result::accumulate5($fn1, ..., $transform)` | Combine 5 Results, collecting all errors |
+| `Result::accumulate6($fn1, ..., $transform)` | Combine 6 Results, collecting all errors |
+| `Result::accumulate7($fn1, ..., $transform)` | Combine 7 Results, collecting all errors |
+| `Result::accumulate8($fn1, ..., $transform)` | Combine 8 Results, collecting all errors |
+| `Result::accumulate9($fn1, ..., $transform)` | Combine 9 Results, collecting all errors |
 
 ### Instance Methods
 

@@ -202,3 +202,422 @@ describe('Result::binding', function (): void {
         expect($result->getOrElse(0))->toBe(42);
     });
 });
+
+describe('Result::accumulate2', function (): void {
+    it('returns Success with transformed value when all are Success', function (): void {
+        $result = Result::accumulate2(
+            fn () => Result::success(1),
+            fn () => Result::success(2),
+            fn (int $a, int $b) => $a + $b
+        );
+
+        expect($result)->toBeInstanceOf(Success::class);
+        expect($result->getOrElse(0))->toBe(3);
+    });
+
+    it('returns Failure with single error when one fails', function (): void {
+        $result = Result::accumulate2(
+            fn () => Result::success(1),
+            fn () => Result::failure('error2'),
+            fn (int $a, int $b) => $a + $b
+        );
+
+        expect($result)->toBeInstanceOf(Failure::class);
+        expect($result->getErrorOrElse([]))->toBe(['error2']);
+    });
+
+    it('collects all errors when all fail', function (): void {
+        $result = Result::accumulate2(
+            fn () => Result::failure('error1'),
+            fn () => Result::failure('error2'),
+            fn (int $a, int $b) => $a + $b
+        );
+
+        expect($result)->toBeInstanceOf(Failure::class);
+        expect($result->getErrorOrElse([]))->toBe(['error1', 'error2']);
+    });
+
+    it('does not call transform when any Result is Failure', function (): void {
+        $called = false;
+        $validate = fn (int $x): Result => $x > 0 ? Result::success($x) : Result::failure('must be positive');
+        Result::accumulate2(
+            fn () => Result::success(1),
+            fn () => $validate(-1),
+            function (int $a, int $b) use (&$called): int {
+                $called = true;
+
+                return $a + $b;
+            }
+        );
+
+        expect($called)->toBeFalse();
+    });
+
+    it('works with different value types', function (): void {
+        $result = Result::accumulate2(
+            fn () => Result::success('hello'),
+            fn () => Result::success(42),
+            fn (string $s, int $n) => "{$s}: {$n}"
+        );
+
+        expect($result)->toBeInstanceOf(Success::class);
+        expect($result->getOrElse(''))->toBe('hello: 42');
+    });
+
+    it('preserves error order matching argument order', function (): void {
+        $result = Result::accumulate2(
+            fn () => Result::failure('first'),
+            fn () => Result::failure('second'),
+            fn (int $a, int $b) => $a + $b
+        );
+
+        expect($result->getErrorOrElse([]))->toBe(['first', 'second']);
+    });
+});
+
+describe('Result::accumulate3', function (): void {
+    it('returns Success with transformed value when all are Success', function (): void {
+        $result = Result::accumulate3(
+            fn () => Result::success(1),
+            fn () => Result::success(2),
+            fn () => Result::success(3),
+            fn (int $a, int $b, int $c) => $a + $b + $c
+        );
+
+        expect($result)->toBeInstanceOf(Success::class);
+        expect($result->getOrElse(0))->toBe(6);
+    });
+
+    it('collects errors from failed Results', function (): void {
+        $result = Result::accumulate3(
+            fn () => Result::success(1),
+            fn () => Result::failure('e2'),
+            fn () => Result::failure('e3'),
+            fn (int $a, int $b, int $c) => $a + $b + $c
+        );
+
+        expect($result)->toBeInstanceOf(Failure::class);
+        expect($result->getErrorOrElse([]))->toBe(['e2', 'e3']);
+    });
+
+    it('collects all errors when all fail', function (): void {
+        $result = Result::accumulate3(
+            fn () => Result::failure('e1'),
+            fn () => Result::failure('e2'),
+            fn () => Result::failure('e3'),
+            fn (int $a, int $b, int $c) => $a + $b + $c
+        );
+
+        expect($result)->toBeInstanceOf(Failure::class);
+        expect($result->getErrorOrElse([]))->toBe(['e1', 'e2', 'e3']);
+    });
+});
+
+describe('Result::accumulate4', function (): void {
+    it('returns Success with transformed value when all are Success', function (): void {
+        $result = Result::accumulate4(
+            fn () => Result::success(1),
+            fn () => Result::success(2),
+            fn () => Result::success(3),
+            fn () => Result::success(4),
+            fn (int $a, int $b, int $c, int $d) => $a + $b + $c + $d
+        );
+
+        expect($result)->toBeInstanceOf(Success::class);
+        expect($result->getOrElse(0))->toBe(10);
+    });
+
+    it('collects errors from failed Results', function (): void {
+        $result = Result::accumulate4(
+            fn () => Result::success(1),
+            fn () => Result::failure('e2'),
+            fn () => Result::success(3),
+            fn () => Result::failure('e4'),
+            fn (int $a, int $b, int $c, int $d) => $a + $b + $c + $d
+        );
+
+        expect($result)->toBeInstanceOf(Failure::class);
+        expect($result->getErrorOrElse([]))->toBe(['e2', 'e4']);
+    });
+
+    it('collects all errors when all fail', function (): void {
+        $result = Result::accumulate4(
+            fn () => Result::failure('e1'),
+            fn () => Result::failure('e2'),
+            fn () => Result::failure('e3'),
+            fn () => Result::failure('e4'),
+            fn (int $a, int $b, int $c, int $d) => $a + $b + $c + $d
+        );
+
+        expect($result)->toBeInstanceOf(Failure::class);
+        expect($result->getErrorOrElse([]))->toBe(['e1', 'e2', 'e3', 'e4']);
+    });
+});
+
+describe('Result::accumulate5', function (): void {
+    it('returns Success with transformed value when all are Success', function (): void {
+        $result = Result::accumulate5(
+            fn () => Result::success(1),
+            fn () => Result::success(2),
+            fn () => Result::success(3),
+            fn () => Result::success(4),
+            fn () => Result::success(5),
+            fn (int $a, int $b, int $c, int $d, int $e) => $a + $b + $c + $d + $e
+        );
+
+        expect($result)->toBeInstanceOf(Success::class);
+        expect($result->getOrElse(0))->toBe(15);
+    });
+
+    it('collects errors from failed Results', function (): void {
+        $result = Result::accumulate5(
+            fn () => Result::failure('e1'),
+            fn () => Result::success(2),
+            fn () => Result::failure('e3'),
+            fn () => Result::success(4),
+            fn () => Result::failure('e5'),
+            fn (int $a, int $b, int $c, int $d, int $e) => $a + $b + $c + $d + $e
+        );
+
+        expect($result)->toBeInstanceOf(Failure::class);
+        expect($result->getErrorOrElse([]))->toBe(['e1', 'e3', 'e5']);
+    });
+
+    it('collects all errors when all fail', function (): void {
+        $result = Result::accumulate5(
+            fn () => Result::failure('e1'),
+            fn () => Result::failure('e2'),
+            fn () => Result::failure('e3'),
+            fn () => Result::failure('e4'),
+            fn () => Result::failure('e5'),
+            fn (int $a, int $b, int $c, int $d, int $e) => $a + $b + $c + $d + $e
+        );
+
+        expect($result)->toBeInstanceOf(Failure::class);
+        expect($result->getErrorOrElse([]))->toBe(['e1', 'e2', 'e3', 'e4', 'e5']);
+    });
+});
+
+describe('Result::accumulate6', function (): void {
+    it('returns Success with transformed value when all are Success', function (): void {
+        $result = Result::accumulate6(
+            fn () => Result::success(1),
+            fn () => Result::success(2),
+            fn () => Result::success(3),
+            fn () => Result::success(4),
+            fn () => Result::success(5),
+            fn () => Result::success(6),
+            fn (int $a, int $b, int $c, int $d, int $e, int $f) => $a + $b + $c + $d + $e + $f
+        );
+
+        expect($result)->toBeInstanceOf(Success::class);
+        expect($result->getOrElse(0))->toBe(21);
+    });
+
+    it('collects errors from failed Results', function (): void {
+        $result = Result::accumulate6(
+            fn () => Result::failure('e1'),
+            fn () => Result::success(2),
+            fn () => Result::success(3),
+            fn () => Result::failure('e4'),
+            fn () => Result::success(5),
+            fn () => Result::failure('e6'),
+            fn (int $a, int $b, int $c, int $d, int $e, int $f) => $a + $b + $c + $d + $e + $f
+        );
+
+        expect($result)->toBeInstanceOf(Failure::class);
+        expect($result->getErrorOrElse([]))->toBe(['e1', 'e4', 'e6']);
+    });
+
+    it('collects all errors when all fail', function (): void {
+        $result = Result::accumulate6(
+            fn () => Result::failure('e1'),
+            fn () => Result::failure('e2'),
+            fn () => Result::failure('e3'),
+            fn () => Result::failure('e4'),
+            fn () => Result::failure('e5'),
+            fn () => Result::failure('e6'),
+            fn (int $a, int $b, int $c, int $d, int $e, int $f) => $a + $b + $c + $d + $e + $f
+        );
+
+        expect($result)->toBeInstanceOf(Failure::class);
+        expect($result->getErrorOrElse([]))->toBe(['e1', 'e2', 'e3', 'e4', 'e5', 'e6']);
+    });
+});
+
+describe('Result::accumulate7', function (): void {
+    it('returns Success with transformed value when all are Success', function (): void {
+        $result = Result::accumulate7(
+            fn () => Result::success(1),
+            fn () => Result::success(2),
+            fn () => Result::success(3),
+            fn () => Result::success(4),
+            fn () => Result::success(5),
+            fn () => Result::success(6),
+            fn () => Result::success(7),
+            fn (int $a, int $b, int $c, int $d, int $e, int $f, int $g) => $a + $b + $c + $d + $e + $f + $g
+        );
+
+        expect($result)->toBeInstanceOf(Success::class);
+        expect($result->getOrElse(0))->toBe(28);
+    });
+
+    it('collects errors from failed Results', function (): void {
+        $result = Result::accumulate7(
+            fn () => Result::success(1),
+            fn () => Result::failure('e2'),
+            fn () => Result::success(3),
+            fn () => Result::success(4),
+            fn () => Result::failure('e5'),
+            fn () => Result::success(6),
+            fn () => Result::failure('e7'),
+            fn (int $a, int $b, int $c, int $d, int $e, int $f, int $g) => $a + $b + $c + $d + $e + $f + $g
+        );
+
+        expect($result)->toBeInstanceOf(Failure::class);
+        expect($result->getErrorOrElse([]))->toBe(['e2', 'e5', 'e7']);
+    });
+
+    it('collects all errors when all fail', function (): void {
+        $result = Result::accumulate7(
+            fn () => Result::failure('e1'),
+            fn () => Result::failure('e2'),
+            fn () => Result::failure('e3'),
+            fn () => Result::failure('e4'),
+            fn () => Result::failure('e5'),
+            fn () => Result::failure('e6'),
+            fn () => Result::failure('e7'),
+            fn (int $a, int $b, int $c, int $d, int $e, int $f, int $g) => $a + $b + $c + $d + $e + $f + $g
+        );
+
+        expect($result)->toBeInstanceOf(Failure::class);
+        expect($result->getErrorOrElse([]))->toBe(['e1', 'e2', 'e3', 'e4', 'e5', 'e6', 'e7']);
+    });
+});
+
+describe('Result::accumulate8', function (): void {
+    it('returns Success with transformed value when all are Success', function (): void {
+        $result = Result::accumulate8(
+            fn () => Result::success(1),
+            fn () => Result::success(2),
+            fn () => Result::success(3),
+            fn () => Result::success(4),
+            fn () => Result::success(5),
+            fn () => Result::success(6),
+            fn () => Result::success(7),
+            fn () => Result::success(8),
+            fn (int $a, int $b, int $c, int $d, int $e, int $f, int $g, int $h) => $a + $b + $c + $d + $e + $f + $g + $h
+        );
+
+        expect($result)->toBeInstanceOf(Success::class);
+        expect($result->getOrElse(0))->toBe(36);
+    });
+
+    it('collects errors from failed Results', function (): void {
+        $result = Result::accumulate8(
+            fn () => Result::failure('e1'),
+            fn () => Result::success(2),
+            fn () => Result::failure('e3'),
+            fn () => Result::success(4),
+            fn () => Result::success(5),
+            fn () => Result::failure('e6'),
+            fn () => Result::success(7),
+            fn () => Result::failure('e8'),
+            fn (int $a, int $b, int $c, int $d, int $e, int $f, int $g, int $h) => $a + $b + $c + $d + $e + $f + $g + $h
+        );
+
+        expect($result)->toBeInstanceOf(Failure::class);
+        expect($result->getErrorOrElse([]))->toBe(['e1', 'e3', 'e6', 'e8']);
+    });
+
+    it('collects all errors when all fail', function (): void {
+        $result = Result::accumulate8(
+            fn () => Result::failure('e1'),
+            fn () => Result::failure('e2'),
+            fn () => Result::failure('e3'),
+            fn () => Result::failure('e4'),
+            fn () => Result::failure('e5'),
+            fn () => Result::failure('e6'),
+            fn () => Result::failure('e7'),
+            fn () => Result::failure('e8'),
+            fn (int $a, int $b, int $c, int $d, int $e, int $f, int $g, int $h) => $a + $b + $c + $d + $e + $f + $g + $h
+        );
+
+        expect($result)->toBeInstanceOf(Failure::class);
+        expect($result->getErrorOrElse([]))->toBe(['e1', 'e2', 'e3', 'e4', 'e5', 'e6', 'e7', 'e8']);
+    });
+});
+
+describe('Result::accumulate9', function (): void {
+    it('returns Success with transformed value when all are Success', function (): void {
+        $result = Result::accumulate9(
+            fn () => Result::success(1),
+            fn () => Result::success(2),
+            fn () => Result::success(3),
+            fn () => Result::success(4),
+            fn () => Result::success(5),
+            fn () => Result::success(6),
+            fn () => Result::success(7),
+            fn () => Result::success(8),
+            fn () => Result::success(9),
+            fn (int $a, int $b, int $c, int $d, int $e, int $f, int $g, int $h, int $i) => $a + $b + $c + $d + $e + $f + $g + $h + $i
+        );
+
+        expect($result)->toBeInstanceOf(Success::class);
+        expect($result->getOrElse(0))->toBe(45);
+    });
+
+    it('collects errors from failed Results', function (): void {
+        $result = Result::accumulate9(
+            fn () => Result::success(1),
+            fn () => Result::failure('e2'),
+            fn () => Result::success(3),
+            fn () => Result::failure('e4'),
+            fn () => Result::success(5),
+            fn () => Result::success(6),
+            fn () => Result::failure('e7'),
+            fn () => Result::success(8),
+            fn () => Result::failure('e9'),
+            fn (int $a, int $b, int $c, int $d, int $e, int $f, int $g, int $h, int $i) => $a + $b + $c + $d + $e + $f + $g + $h + $i
+        );
+
+        expect($result)->toBeInstanceOf(Failure::class);
+        expect($result->getErrorOrElse([]))->toBe(['e2', 'e4', 'e7', 'e9']);
+    });
+
+    it('collects all errors when all fail', function (): void {
+        $result = Result::accumulate9(
+            fn () => Result::failure('e1'),
+            fn () => Result::failure('e2'),
+            fn () => Result::failure('e3'),
+            fn () => Result::failure('e4'),
+            fn () => Result::failure('e5'),
+            fn () => Result::failure('e6'),
+            fn () => Result::failure('e7'),
+            fn () => Result::failure('e8'),
+            fn () => Result::failure('e9'),
+            fn (int $a, int $b, int $c, int $d, int $e, int $f, int $g, int $h, int $i) => $a + $b + $c + $d + $e + $f + $g + $h + $i
+        );
+
+        expect($result)->toBeInstanceOf(Failure::class);
+        expect($result->getErrorOrElse([]))->toBe(['e1', 'e2', 'e3', 'e4', 'e5', 'e6', 'e7', 'e8', 'e9']);
+    });
+
+    it('passes all 9 arguments correctly to transform', function (): void {
+        $result = Result::accumulate9(
+            fn () => Result::success('a'),
+            fn () => Result::success('b'),
+            fn () => Result::success('c'),
+            fn () => Result::success('d'),
+            fn () => Result::success('e'),
+            fn () => Result::success('f'),
+            fn () => Result::success('g'),
+            fn () => Result::success('h'),
+            fn () => Result::success('i'),
+            fn (string $a, string $b, string $c, string $d, string $e, string $f, string $g, string $h, string $i) => $a . $b . $c . $d . $e . $f . $g . $h . $i
+        );
+
+        expect($result)->toBeInstanceOf(Success::class);
+        expect($result->getOrElse(''))->toBe('abcdefghi');
+    });
+});
