@@ -135,15 +135,9 @@ abstract class Result
         $r1 = $fn1();
         $r2 = $fn2();
 
-        $errors = [];
-        if ($r1 instanceof Failure) {
-            $errors[] = $r1->getError();
-        }
-        if ($r2 instanceof Failure) {
-            $errors[] = $r2->getError();
-        }
+        $errors = self::collectErrors($r1, $r2);
 
-        if (!empty($errors)) {
+        if ($errors !== []) {
             /** @var non-empty-list<E1> $errors */
             return self::failure($errors);
         }
@@ -171,18 +165,9 @@ abstract class Result
         $r2 = $fn2();
         $r3 = $fn3();
 
-        $errors = [];
-        if ($r1 instanceof Failure) {
-            $errors[] = $r1->getError();
-        }
-        if ($r2 instanceof Failure) {
-            $errors[] = $r2->getError();
-        }
-        if ($r3 instanceof Failure) {
-            $errors[] = $r3->getError();
-        }
+        $errors = self::collectErrors($r1, $r2, $r3);
 
-        if (!empty($errors)) {
+        if ($errors !== []) {
             /** @var non-empty-list<E1> $errors */
             return self::failure($errors);
         }
@@ -213,21 +198,9 @@ abstract class Result
         $r3 = $fn3();
         $r4 = $fn4();
 
-        $errors = [];
-        if ($r1 instanceof Failure) {
-            $errors[] = $r1->getError();
-        }
-        if ($r2 instanceof Failure) {
-            $errors[] = $r2->getError();
-        }
-        if ($r3 instanceof Failure) {
-            $errors[] = $r3->getError();
-        }
-        if ($r4 instanceof Failure) {
-            $errors[] = $r4->getError();
-        }
+        $errors = self::collectErrors($r1, $r2, $r3, $r4);
 
-        if (!empty($errors)) {
+        if ($errors !== []) {
             /** @var non-empty-list<E1> $errors */
             return self::failure($errors);
         }
@@ -261,24 +234,9 @@ abstract class Result
         $r4 = $fn4();
         $r5 = $fn5();
 
-        $errors = [];
-        if ($r1 instanceof Failure) {
-            $errors[] = $r1->getError();
-        }
-        if ($r2 instanceof Failure) {
-            $errors[] = $r2->getError();
-        }
-        if ($r3 instanceof Failure) {
-            $errors[] = $r3->getError();
-        }
-        if ($r4 instanceof Failure) {
-            $errors[] = $r4->getError();
-        }
-        if ($r5 instanceof Failure) {
-            $errors[] = $r5->getError();
-        }
+        $errors = self::collectErrors($r1, $r2, $r3, $r4, $r5);
 
-        if (!empty($errors)) {
+        if ($errors !== []) {
             /** @var non-empty-list<E1> $errors */
             return self::failure($errors);
         }
@@ -315,27 +273,9 @@ abstract class Result
         $r5 = $fn5();
         $r6 = $fn6();
 
-        $errors = [];
-        if ($r1 instanceof Failure) {
-            $errors[] = $r1->getError();
-        }
-        if ($r2 instanceof Failure) {
-            $errors[] = $r2->getError();
-        }
-        if ($r3 instanceof Failure) {
-            $errors[] = $r3->getError();
-        }
-        if ($r4 instanceof Failure) {
-            $errors[] = $r4->getError();
-        }
-        if ($r5 instanceof Failure) {
-            $errors[] = $r5->getError();
-        }
-        if ($r6 instanceof Failure) {
-            $errors[] = $r6->getError();
-        }
+        $errors = self::collectErrors($r1, $r2, $r3, $r4, $r5, $r6);
 
-        if (!empty($errors)) {
+        if ($errors !== []) {
             /** @var non-empty-list<E1> $errors */
             return self::failure($errors);
         }
@@ -375,30 +315,9 @@ abstract class Result
         $r6 = $fn6();
         $r7 = $fn7();
 
-        $errors = [];
-        if ($r1 instanceof Failure) {
-            $errors[] = $r1->getError();
-        }
-        if ($r2 instanceof Failure) {
-            $errors[] = $r2->getError();
-        }
-        if ($r3 instanceof Failure) {
-            $errors[] = $r3->getError();
-        }
-        if ($r4 instanceof Failure) {
-            $errors[] = $r4->getError();
-        }
-        if ($r5 instanceof Failure) {
-            $errors[] = $r5->getError();
-        }
-        if ($r6 instanceof Failure) {
-            $errors[] = $r6->getError();
-        }
-        if ($r7 instanceof Failure) {
-            $errors[] = $r7->getError();
-        }
+        $errors = self::collectErrors($r1, $r2, $r3, $r4, $r5, $r6, $r7);
 
-        if (!empty($errors)) {
+        if ($errors !== []) {
             /** @var non-empty-list<E1> $errors */
             return self::failure($errors);
         }
@@ -441,33 +360,9 @@ abstract class Result
         $r7 = $fn7();
         $r8 = $fn8();
 
-        $errors = [];
-        if ($r1 instanceof Failure) {
-            $errors[] = $r1->getError();
-        }
-        if ($r2 instanceof Failure) {
-            $errors[] = $r2->getError();
-        }
-        if ($r3 instanceof Failure) {
-            $errors[] = $r3->getError();
-        }
-        if ($r4 instanceof Failure) {
-            $errors[] = $r4->getError();
-        }
-        if ($r5 instanceof Failure) {
-            $errors[] = $r5->getError();
-        }
-        if ($r6 instanceof Failure) {
-            $errors[] = $r6->getError();
-        }
-        if ($r7 instanceof Failure) {
-            $errors[] = $r7->getError();
-        }
-        if ($r8 instanceof Failure) {
-            $errors[] = $r8->getError();
-        }
+        $errors = self::collectErrors($r1, $r2, $r3, $r4, $r5, $r6, $r7, $r8);
 
-        if (!empty($errors)) {
+        if ($errors !== []) {
             /** @var non-empty-list<E1> $errors */
             return self::failure($errors);
         }
@@ -513,41 +408,32 @@ abstract class Result
         $r8 = $fn8();
         $r9 = $fn9();
 
-        $errors = [];
-        if ($r1 instanceof Failure) {
-            $errors[] = $r1->getError();
-        }
-        if ($r2 instanceof Failure) {
-            $errors[] = $r2->getError();
-        }
-        if ($r3 instanceof Failure) {
-            $errors[] = $r3->getError();
-        }
-        if ($r4 instanceof Failure) {
-            $errors[] = $r4->getError();
-        }
-        if ($r5 instanceof Failure) {
-            $errors[] = $r5->getError();
-        }
-        if ($r6 instanceof Failure) {
-            $errors[] = $r6->getError();
-        }
-        if ($r7 instanceof Failure) {
-            $errors[] = $r7->getError();
-        }
-        if ($r8 instanceof Failure) {
-            $errors[] = $r8->getError();
-        }
-        if ($r9 instanceof Failure) {
-            $errors[] = $r9->getError();
-        }
+        $errors = self::collectErrors($r1, $r2, $r3, $r4, $r5, $r6, $r7, $r8, $r9);
 
-        if (!empty($errors)) {
+        if ($errors !== []) {
             /** @var non-empty-list<E1> $errors */
             return self::failure($errors);
         }
 
         return self::success($transform($r1->get(), $r2->get(), $r3->get(), $r4->get(), $r5->get(), $r6->get(), $r7->get(), $r8->get(), $r9->get()));
+    }
+
+    /**
+     * @template E1
+     * @param Result<mixed, E1> ...$results
+     * @return list<E1>
+     */
+    private static function collectErrors(Result ...$results): array
+    {
+        $errors = [];
+
+        foreach ($results as $result) {
+            if ($result instanceof Failure) {
+                $errors[] = $result->getError();
+            }
+        }
+
+        return $errors;
     }
 
     /**
