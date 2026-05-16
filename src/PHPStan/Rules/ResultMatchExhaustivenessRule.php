@@ -44,7 +44,7 @@ final class ResultMatchExhaustivenessRule implements Rule
 
         $errors = [];
         foreach ($resultVariables as $varName) {
-            $error = $this->checkExhaustiveness($node, $varName);
+            $error = $this->checkExhaustiveness($node, $scope, $varName);
             if ($error !== null) {
                 $errors[] = $error;
             }
@@ -95,7 +95,7 @@ final class ResultMatchExhaustivenessRule implements Rule
         return array_keys($resultVars);
     }
 
-    private function checkExhaustiveness(Match_ $node, string $varName): ?IdentifierRuleError
+    private function checkExhaustiveness(Match_ $node, Scope $scope, string $varName): ?IdentifierRuleError
     {
         $hasSuccess = false;
         $hasFailure = false;
@@ -120,12 +120,11 @@ final class ResultMatchExhaustivenessRule implements Rule
                     continue;
                 }
 
-                $className = $cond->class->toString();
-                $shortName = $this->extractShortClassName($className);
+                $className = $scope->resolveName($cond->class);
 
-                if ($shortName === 'Success') {
+                if ($className === Success::class) {
                     $hasSuccess = true;
-                } elseif ($shortName === 'Failure') {
+                } elseif ($className === Failure::class) {
                     $hasFailure = true;
                 }
             }
@@ -160,11 +159,5 @@ final class ResultMatchExhaustivenessRule implements Rule
         }
 
         return null;
-    }
-
-    private function extractShortClassName(string $className): string
-    {
-        $parts = explode('\\', $className);
-        return end($parts);
     }
 }

@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Jsoizo\Result\Tests\PHPStan\Data;
 
 use Jsoizo\Result\Failure;
+use Jsoizo\Result\Failure as ResultFailure;
 use Jsoizo\Result\Result;
 use Jsoizo\Result\Success;
+use Jsoizo\Result\Success as ResultSuccess;
 
 /**
  * @param Result<int, string> $result
@@ -47,6 +49,17 @@ function withFqcn(Result $result): string
     return match (true) {
         $result instanceof \Jsoizo\Result\Success => 'success',
         $result instanceof \Jsoizo\Result\Failure => 'failure',
+    };
+}
+
+/**
+ * @param Result<int, string> $result
+ */
+function withAliases(Result $result): string
+{
+    return match (true) {
+        $result instanceof ResultSuccess => 'success',
+        $result instanceof ResultFailure => 'failure',
     };
 }
 

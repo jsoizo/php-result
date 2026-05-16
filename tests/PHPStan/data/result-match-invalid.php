@@ -7,6 +7,7 @@ namespace Jsoizo\Result\Tests\PHPStan\Data;
 use Jsoizo\Result\Failure;
 use Jsoizo\Result\Result;
 use Jsoizo\Result\Success;
+use Jsoizo\Result\Tests\PHPStan\Fixtures\Failure as OtherFailure;
 
 /**
  * @param Result<int, string> $result
@@ -57,5 +58,16 @@ function fqcnMissingFailure(Result $result): string
 {
     return match (true) {
         $result instanceof \Jsoizo\Result\Success => 'success',
+    };
+}
+
+/**
+ * @param Result<int, string> $result
+ */
+function unrelatedSameShortName(Result $result): string
+{
+    return match (true) {
+        $result instanceof Success => 'success',
+        $result instanceof OtherFailure => 'other failure',
     };
 }

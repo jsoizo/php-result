@@ -23,23 +23,27 @@ final class ResultMatchExhaustivenessRuleTest extends RuleTestCase
         $this->analyse([__DIR__ . '/../data/result-match-invalid.php'], [
             [
                 'Match expression on Result type is not exhaustive. Missing: Failure.',
-                16,
+                17,
             ],
             [
                 'Match expression on Result type is not exhaustive. Missing: Success.',
-                26,
+                27,
             ],
             [
                 'Match expression on Result type is not exhaustive. Missing: Failure.',
-                47,
+                48,
             ],
             [
                 'Match expression on Result type is not exhaustive. Missing: Success.',
-                47,
+                48,
             ],
             [
                 'Match expression on Result type is not exhaustive. Missing: Failure.',
-                58,
+                59,
+            ],
+            [
+                'Match expression on Result type is not exhaustive. Missing: Failure.',
+                69,
             ],
         ]);
     }
