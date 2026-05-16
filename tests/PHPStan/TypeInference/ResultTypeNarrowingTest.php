@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Jsoizo\Result\Tests\PHPStan\TypeInference;
 
-use PHPUnit\Framework\Attributes\DataProvider;
 use PHPStan\Testing\TypeInferenceTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 final class ResultTypeNarrowingTest extends TypeInferenceTestCase
 {
