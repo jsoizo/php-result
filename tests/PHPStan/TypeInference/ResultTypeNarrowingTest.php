@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Jsoizo\Result\Tests\PHPStan\TypeInference;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPStan\Testing\TypeInferenceTestCase;
 
 final class ResultTypeNarrowingTest extends TypeInferenceTestCase
@@ -16,9 +17,7 @@ final class ResultTypeNarrowingTest extends TypeInferenceTestCase
         yield from self::gatherAssertTypes(__DIR__ . '/../data/result-type-narrowing.php');
     }
 
-    /**
-     * @dataProvider dataFileAsserts
-     */
+    #[DataProvider('dataFileAsserts')]
     public function testFileAsserts(string $assertType, string $file, mixed ...$args): void
     {
         $this->assertFileAsserts($assertType, $file, ...$args);
