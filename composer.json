@@ -44,12 +44,15 @@
     "scripts": {
         "test": "pest",
         "test:coverage": "pest --coverage --coverage-html=coverage --min=100",
-        "analyse": "phpstan analyse",
+        "analyse": "phpstan analyse --memory-limit=1G",
         "cs-check": "php-cs-fixer fix --dry-run --diff",
         "cs-fix": "php-cs-fixer fix",
         "compat": "phpcs -p --standard=PHPCompatibility --runtime-set testVersion 8.1- src/"
     },
     "config": {
+        "platform": {
+            "php": "8.2.0"
+        },
         "sort-packages": true,
         "allow-plugins": {
             "dealerdirect/phpcodesniffer-composer-installer": true,
