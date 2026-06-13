@@ -57,6 +57,7 @@ $result = validateEmail($input['email'])
 
 // Recover from failure with default value
 $recovered = $failure->recover(fn($e) => 'default'); // Success('default')
+// recover() always returns a successful Result, so the error type becomes never.
 
 // Chain fallback operations
 $result = fetchFromPrimaryDb()
@@ -149,6 +150,18 @@ $saved = $result->flatMap(fn(string $value) => save($value));
 ```
 
 Long chains can naturally produce wide error unions. When that becomes awkward, normalize errors with `mapError()` to a domain-specific error type at a boundary.
+
+### Recovering with Different Success Types
+
+`recover()` and `recoverWith()` can return a different success type than the original `Result`:
+
+```php
+/** @var Result<int, string> $result */
+$recovered = $result->recover(fn(string $error) => false);
+// Result<int|bool, never>
+```
+
+After `recover()`, the Result can no longer be a Failure. `recoverWith()` keeps the callback's error type because the fallback operation may still fail.
 
 ## PHPStan Integration
 

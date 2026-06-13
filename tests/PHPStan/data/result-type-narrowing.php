@@ -89,3 +89,23 @@ function testFlatMapPreservesOriginalError(Result $result): void
 
     assertType('Jsoizo\Result\Result<never, Jsoizo\Result\Tests\PHPStan\Data\DbError|Jsoizo\Result\Tests\PHPStan\Data\ValidationError>', $mapped);
 }
+
+/**
+ * @param Result<int, string> $result
+ */
+function testRecoverCanChangeSuccessType(Result $result): void
+{
+    $recovered = $result->recover(fn (string $error) => false);
+
+    assertType('Jsoizo\Result\Result<bool|int, never>', $recovered);
+}
+
+/**
+ * @param Result<int, string> $result
+ */
+function testRecoverWithCanChangeSuccessAndErrorTypes(Result $result): void
+{
+    $recovered = $result->recoverWith(fn (string $error) => Result::failure(new \RuntimeException($error)));
+
+    assertType('Jsoizo\Result\Result<int, RuntimeException>', $recovered);
+}

@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Changed `flatMap()` type definitions to preserve the original error type as `E|E1` instead of dropping `E`
+- Changed `recover()` and `recoverWith()` type definitions to allow different recovery success types
+- Changed `recover()` type definitions to return `never` as the error type after successful recovery
 
 ### Fixed
 - Fixed `Result::binding()` hanging forever when a generator yields a non-Result value

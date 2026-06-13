@@ -562,10 +562,9 @@ abstract class Result
      * If this is a Failure, applies the function to the error and wraps the result
      * in a new Success. If this is a Success, returns the Success unchanged.
      *
-     * @param callable(E): T $fn The recovery function
-     * @return Result<T, E> A new Success with the recovered value, or the original Success
-     *
-     * @phpstan-ignore generics.variance (T is covariant but used in contravariant position in callable parameter for practical API design)
+     * @template T1 The type of the recovery value
+     * @param callable(E): T1 $fn The recovery function
+     * @return Result<T|T1, never> A new Success with the recovered value, or the original Success
      */
     abstract public function recover(callable $fn): Result;
 
@@ -576,11 +575,10 @@ abstract class Result
      * resulting Result directly. If this is a Success, returns the Success unchanged.
      * This allows chaining fallback operations or changing the error type.
      *
+     * @template T1 The success type of the resulting Result
      * @template E1 The error type of the resulting Result
-     * @param callable(E): Result<T, E1> $fn The recovery function returning a new Result
-     * @return Result<T, E1> The Result from the function, or the original Success
-     *
-     * @phpstan-ignore generics.variance (T is covariant but used in contravariant position in callable parameter for practical API design)
+     * @param callable(E): Result<T1, E1> $fn The recovery function returning a new Result
+     * @return Result<T|T1, E1> The Result from the function, or the original Success
      */
     abstract public function recoverWith(callable $fn): Result;
 
