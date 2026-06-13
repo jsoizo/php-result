@@ -89,11 +89,20 @@ $result = Result::binding(function () use ($orderId) {
 // Returns Result<list<Item>, Throwable> - short-circuits on first failure
 // Every yielded value must be a Result; invalid yields throw ResultException.
 
+// Sequence a list of Results, collecting all errors
+$result = Result::sequence([
+    validateName($input['name']),
+    validateAge($input['age']),
+    validateEmail($input['email']),
+]);
+// All Success → Success([name, age, email])
+// Any Failure → Failure(['Name required', 'Invalid email']) (non-empty-list of errors)
+
 // Accumulate errors from multiple independent validations
 $result = Result::accumulate3(
-    fn() => validateName($input['name']),
-    fn() => validateAge($input['age']),
-    fn() => validateEmail($input['email']),
+    validateName($input['name']),
+    validateAge($input['age']),
+    validateEmail($input['email']),
     fn(string $name, int $age, string $email) => new User($name, $age, $email)
 );
 // All Success → Success(User(...))
@@ -110,14 +119,15 @@ $result = Result::accumulate3(
 | `Result::failure($error)` | Create a Failure |
 | `Result::catch(callable $fn)` | Wrap exception-throwing code |
 | `Result::binding(callable $fn)` | Monad comprehension using generators |
-| `Result::accumulate2($fn1, ..., $transform)` | Combine 2 Results, collecting all errors |
-| `Result::accumulate3($fn1, ..., $transform)` | Combine 3 Results, collecting all errors |
-| `Result::accumulate4($fn1, ..., $transform)` | Combine 4 Results, collecting all errors |
-| `Result::accumulate5($fn1, ..., $transform)` | Combine 5 Results, collecting all errors |
-| `Result::accumulate6($fn1, ..., $transform)` | Combine 6 Results, collecting all errors |
-| `Result::accumulate7($fn1, ..., $transform)` | Combine 7 Results, collecting all errors |
-| `Result::accumulate8($fn1, ..., $transform)` | Combine 8 Results, collecting all errors |
-| `Result::accumulate9($fn1, ..., $transform)` | Combine 9 Results, collecting all errors |
+| `Result::sequence($results)` | Convert a list of Results into one Result, collecting all errors |
+| `Result::accumulate2($r1, ..., $transform)` | Combine 2 Results, collecting all errors |
+| `Result::accumulate3($r1, ..., $transform)` | Combine 3 Results, collecting all errors |
+| `Result::accumulate4($r1, ..., $transform)` | Combine 4 Results, collecting all errors |
+| `Result::accumulate5($r1, ..., $transform)` | Combine 5 Results, collecting all errors |
+| `Result::accumulate6($r1, ..., $transform)` | Combine 6 Results, collecting all errors |
+| `Result::accumulate7($r1, ..., $transform)` | Combine 7 Results, collecting all errors |
+| `Result::accumulate8($r1, ..., $transform)` | Combine 8 Results, collecting all errors |
+| `Result::accumulate9($r1, ..., $transform)` | Combine 9 Results, collecting all errors |
 
 ### Instance Methods
 

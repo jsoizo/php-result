@@ -232,11 +232,55 @@ describe('Result::binding', function (): void {
     });
 });
 
+describe('Result::sequence', function (): void {
+    it('returns Success with empty list for empty input', function (): void {
+        /** @var list<Result<int, string>> $results */
+        $results = [];
+        $result = Result::sequence($results);
+
+        expect($result)->toBeInstanceOf(Success::class);
+        expect($result->getOrElse(['fallback']))->toBe([]);
+    });
+
+    it('returns Success with values when all Results are Success', function (): void {
+        $result = Result::sequence([
+            Result::success(1),
+            Result::success(2),
+            Result::success(3),
+        ]);
+
+        expect($result)->toBeInstanceOf(Success::class);
+        expect($result->getOrElse([]))->toBe([1, 2, 3]);
+    });
+
+    it('returns Failure with single error when one Result fails', function (): void {
+        $result = Result::sequence([
+            Result::success(1),
+            Result::failure('error'),
+            Result::success(3),
+        ]);
+
+        expect($result)->toBeInstanceOf(Failure::class);
+        expect($result->getErrorOrElse([]))->toBe(['error']);
+    });
+
+    it('collects all errors in input order', function (): void {
+        $result = Result::sequence([
+            Result::failure('first'),
+            Result::success(2),
+            Result::failure('second'),
+        ]);
+
+        expect($result)->toBeInstanceOf(Failure::class);
+        expect($result->getErrorOrElse([]))->toBe(['first', 'second']);
+    });
+});
+
 describe('Result::accumulate2', function (): void {
     it('returns Success with transformed value when all are Success', function (): void {
         $result = Result::accumulate2(
-            fn () => Result::success(1),
-            fn () => Result::success(2),
+            Result::success(1),
+            Result::success(2),
             fn (int $a, int $b) => $a + $b
         );
 
@@ -246,8 +290,8 @@ describe('Result::accumulate2', function (): void {
 
     it('returns Failure with single error when one fails', function (): void {
         $result = Result::accumulate2(
-            fn () => Result::success(1),
-            fn () => Result::failure('error2'),
+            Result::success(1),
+            Result::failure('error2'),
             fn (int $a, int $b) => $a + $b
         );
 
@@ -257,8 +301,8 @@ describe('Result::accumulate2', function (): void {
 
     it('collects all errors when all fail', function (): void {
         $result = Result::accumulate2(
-            fn () => Result::failure('error1'),
-            fn () => Result::failure('error2'),
+            Result::failure('error1'),
+            Result::failure('error2'),
             fn (int $a, int $b) => $a + $b
         );
 
@@ -270,8 +314,8 @@ describe('Result::accumulate2', function (): void {
         $called = false;
         $validate = fn (int $x): Result => $x > 0 ? Result::success($x) : Result::failure('must be positive');
         Result::accumulate2(
-            fn () => Result::success(1),
-            fn () => $validate(-1),
+            Result::success(1),
+            $validate(-1),
             function (int $a, int $b) use (&$called): int {
                 $called = true;
 
@@ -284,8 +328,8 @@ describe('Result::accumulate2', function (): void {
 
     it('works with different value types', function (): void {
         $result = Result::accumulate2(
-            fn () => Result::success('hello'),
-            fn () => Result::success(42),
+            Result::success('hello'),
+            Result::success(42),
             fn (string $s, int $n) => "{$s}: {$n}"
         );
 
@@ -295,8 +339,8 @@ describe('Result::accumulate2', function (): void {
 
     it('preserves error order matching argument order', function (): void {
         $result = Result::accumulate2(
-            fn () => Result::failure('first'),
-            fn () => Result::failure('second'),
+            Result::failure('first'),
+            Result::failure('second'),
             fn (int $a, int $b) => $a + $b
         );
 
@@ -307,9 +351,9 @@ describe('Result::accumulate2', function (): void {
 describe('Result::accumulate3', function (): void {
     it('returns Success with transformed value when all are Success', function (): void {
         $result = Result::accumulate3(
-            fn () => Result::success(1),
-            fn () => Result::success(2),
-            fn () => Result::success(3),
+            Result::success(1),
+            Result::success(2),
+            Result::success(3),
             fn (int $a, int $b, int $c) => $a + $b + $c
         );
 
@@ -319,9 +363,9 @@ describe('Result::accumulate3', function (): void {
 
     it('collects errors from failed Results', function (): void {
         $result = Result::accumulate3(
-            fn () => Result::success(1),
-            fn () => Result::failure('e2'),
-            fn () => Result::failure('e3'),
+            Result::success(1),
+            Result::failure('e2'),
+            Result::failure('e3'),
             fn (int $a, int $b, int $c) => $a + $b + $c
         );
 
@@ -331,9 +375,9 @@ describe('Result::accumulate3', function (): void {
 
     it('collects all errors when all fail', function (): void {
         $result = Result::accumulate3(
-            fn () => Result::failure('e1'),
-            fn () => Result::failure('e2'),
-            fn () => Result::failure('e3'),
+            Result::failure('e1'),
+            Result::failure('e2'),
+            Result::failure('e3'),
             fn (int $a, int $b, int $c) => $a + $b + $c
         );
 
@@ -345,10 +389,10 @@ describe('Result::accumulate3', function (): void {
 describe('Result::accumulate4', function (): void {
     it('returns Success with transformed value when all are Success', function (): void {
         $result = Result::accumulate4(
-            fn () => Result::success(1),
-            fn () => Result::success(2),
-            fn () => Result::success(3),
-            fn () => Result::success(4),
+            Result::success(1),
+            Result::success(2),
+            Result::success(3),
+            Result::success(4),
             fn (int $a, int $b, int $c, int $d) => $a + $b + $c + $d
         );
 
@@ -358,10 +402,10 @@ describe('Result::accumulate4', function (): void {
 
     it('collects errors from failed Results', function (): void {
         $result = Result::accumulate4(
-            fn () => Result::success(1),
-            fn () => Result::failure('e2'),
-            fn () => Result::success(3),
-            fn () => Result::failure('e4'),
+            Result::success(1),
+            Result::failure('e2'),
+            Result::success(3),
+            Result::failure('e4'),
             fn (int $a, int $b, int $c, int $d) => $a + $b + $c + $d
         );
 
@@ -371,10 +415,10 @@ describe('Result::accumulate4', function (): void {
 
     it('collects all errors when all fail', function (): void {
         $result = Result::accumulate4(
-            fn () => Result::failure('e1'),
-            fn () => Result::failure('e2'),
-            fn () => Result::failure('e3'),
-            fn () => Result::failure('e4'),
+            Result::failure('e1'),
+            Result::failure('e2'),
+            Result::failure('e3'),
+            Result::failure('e4'),
             fn (int $a, int $b, int $c, int $d) => $a + $b + $c + $d
         );
 
@@ -386,11 +430,11 @@ describe('Result::accumulate4', function (): void {
 describe('Result::accumulate5', function (): void {
     it('returns Success with transformed value when all are Success', function (): void {
         $result = Result::accumulate5(
-            fn () => Result::success(1),
-            fn () => Result::success(2),
-            fn () => Result::success(3),
-            fn () => Result::success(4),
-            fn () => Result::success(5),
+            Result::success(1),
+            Result::success(2),
+            Result::success(3),
+            Result::success(4),
+            Result::success(5),
             fn (int $a, int $b, int $c, int $d, int $e) => $a + $b + $c + $d + $e
         );
 
@@ -400,11 +444,11 @@ describe('Result::accumulate5', function (): void {
 
     it('collects errors from failed Results', function (): void {
         $result = Result::accumulate5(
-            fn () => Result::failure('e1'),
-            fn () => Result::success(2),
-            fn () => Result::failure('e3'),
-            fn () => Result::success(4),
-            fn () => Result::failure('e5'),
+            Result::failure('e1'),
+            Result::success(2),
+            Result::failure('e3'),
+            Result::success(4),
+            Result::failure('e5'),
             fn (int $a, int $b, int $c, int $d, int $e) => $a + $b + $c + $d + $e
         );
 
@@ -414,11 +458,11 @@ describe('Result::accumulate5', function (): void {
 
     it('collects all errors when all fail', function (): void {
         $result = Result::accumulate5(
-            fn () => Result::failure('e1'),
-            fn () => Result::failure('e2'),
-            fn () => Result::failure('e3'),
-            fn () => Result::failure('e4'),
-            fn () => Result::failure('e5'),
+            Result::failure('e1'),
+            Result::failure('e2'),
+            Result::failure('e3'),
+            Result::failure('e4'),
+            Result::failure('e5'),
             fn (int $a, int $b, int $c, int $d, int $e) => $a + $b + $c + $d + $e
         );
 
@@ -430,12 +474,12 @@ describe('Result::accumulate5', function (): void {
 describe('Result::accumulate6', function (): void {
     it('returns Success with transformed value when all are Success', function (): void {
         $result = Result::accumulate6(
-            fn () => Result::success(1),
-            fn () => Result::success(2),
-            fn () => Result::success(3),
-            fn () => Result::success(4),
-            fn () => Result::success(5),
-            fn () => Result::success(6),
+            Result::success(1),
+            Result::success(2),
+            Result::success(3),
+            Result::success(4),
+            Result::success(5),
+            Result::success(6),
             fn (int $a, int $b, int $c, int $d, int $e, int $f) => $a + $b + $c + $d + $e + $f
         );
 
@@ -445,12 +489,12 @@ describe('Result::accumulate6', function (): void {
 
     it('collects errors from failed Results', function (): void {
         $result = Result::accumulate6(
-            fn () => Result::failure('e1'),
-            fn () => Result::success(2),
-            fn () => Result::success(3),
-            fn () => Result::failure('e4'),
-            fn () => Result::success(5),
-            fn () => Result::failure('e6'),
+            Result::failure('e1'),
+            Result::success(2),
+            Result::success(3),
+            Result::failure('e4'),
+            Result::success(5),
+            Result::failure('e6'),
             fn (int $a, int $b, int $c, int $d, int $e, int $f) => $a + $b + $c + $d + $e + $f
         );
 
@@ -460,12 +504,12 @@ describe('Result::accumulate6', function (): void {
 
     it('collects all errors when all fail', function (): void {
         $result = Result::accumulate6(
-            fn () => Result::failure('e1'),
-            fn () => Result::failure('e2'),
-            fn () => Result::failure('e3'),
-            fn () => Result::failure('e4'),
-            fn () => Result::failure('e5'),
-            fn () => Result::failure('e6'),
+            Result::failure('e1'),
+            Result::failure('e2'),
+            Result::failure('e3'),
+            Result::failure('e4'),
+            Result::failure('e5'),
+            Result::failure('e6'),
             fn (int $a, int $b, int $c, int $d, int $e, int $f) => $a + $b + $c + $d + $e + $f
         );
 
@@ -477,13 +521,13 @@ describe('Result::accumulate6', function (): void {
 describe('Result::accumulate7', function (): void {
     it('returns Success with transformed value when all are Success', function (): void {
         $result = Result::accumulate7(
-            fn () => Result::success(1),
-            fn () => Result::success(2),
-            fn () => Result::success(3),
-            fn () => Result::success(4),
-            fn () => Result::success(5),
-            fn () => Result::success(6),
-            fn () => Result::success(7),
+            Result::success(1),
+            Result::success(2),
+            Result::success(3),
+            Result::success(4),
+            Result::success(5),
+            Result::success(6),
+            Result::success(7),
             fn (int $a, int $b, int $c, int $d, int $e, int $f, int $g) => $a + $b + $c + $d + $e + $f + $g
         );
 
@@ -493,13 +537,13 @@ describe('Result::accumulate7', function (): void {
 
     it('collects errors from failed Results', function (): void {
         $result = Result::accumulate7(
-            fn () => Result::success(1),
-            fn () => Result::failure('e2'),
-            fn () => Result::success(3),
-            fn () => Result::success(4),
-            fn () => Result::failure('e5'),
-            fn () => Result::success(6),
-            fn () => Result::failure('e7'),
+            Result::success(1),
+            Result::failure('e2'),
+            Result::success(3),
+            Result::success(4),
+            Result::failure('e5'),
+            Result::success(6),
+            Result::failure('e7'),
             fn (int $a, int $b, int $c, int $d, int $e, int $f, int $g) => $a + $b + $c + $d + $e + $f + $g
         );
 
@@ -509,13 +553,13 @@ describe('Result::accumulate7', function (): void {
 
     it('collects all errors when all fail', function (): void {
         $result = Result::accumulate7(
-            fn () => Result::failure('e1'),
-            fn () => Result::failure('e2'),
-            fn () => Result::failure('e3'),
-            fn () => Result::failure('e4'),
-            fn () => Result::failure('e5'),
-            fn () => Result::failure('e6'),
-            fn () => Result::failure('e7'),
+            Result::failure('e1'),
+            Result::failure('e2'),
+            Result::failure('e3'),
+            Result::failure('e4'),
+            Result::failure('e5'),
+            Result::failure('e6'),
+            Result::failure('e7'),
             fn (int $a, int $b, int $c, int $d, int $e, int $f, int $g) => $a + $b + $c + $d + $e + $f + $g
         );
 
@@ -527,14 +571,14 @@ describe('Result::accumulate7', function (): void {
 describe('Result::accumulate8', function (): void {
     it('returns Success with transformed value when all are Success', function (): void {
         $result = Result::accumulate8(
-            fn () => Result::success(1),
-            fn () => Result::success(2),
-            fn () => Result::success(3),
-            fn () => Result::success(4),
-            fn () => Result::success(5),
-            fn () => Result::success(6),
-            fn () => Result::success(7),
-            fn () => Result::success(8),
+            Result::success(1),
+            Result::success(2),
+            Result::success(3),
+            Result::success(4),
+            Result::success(5),
+            Result::success(6),
+            Result::success(7),
+            Result::success(8),
             fn (int $a, int $b, int $c, int $d, int $e, int $f, int $g, int $h) => $a + $b + $c + $d + $e + $f + $g + $h
         );
 
@@ -544,14 +588,14 @@ describe('Result::accumulate8', function (): void {
 
     it('collects errors from failed Results', function (): void {
         $result = Result::accumulate8(
-            fn () => Result::failure('e1'),
-            fn () => Result::success(2),
-            fn () => Result::failure('e3'),
-            fn () => Result::success(4),
-            fn () => Result::success(5),
-            fn () => Result::failure('e6'),
-            fn () => Result::success(7),
-            fn () => Result::failure('e8'),
+            Result::failure('e1'),
+            Result::success(2),
+            Result::failure('e3'),
+            Result::success(4),
+            Result::success(5),
+            Result::failure('e6'),
+            Result::success(7),
+            Result::failure('e8'),
             fn (int $a, int $b, int $c, int $d, int $e, int $f, int $g, int $h) => $a + $b + $c + $d + $e + $f + $g + $h
         );
 
@@ -561,14 +605,14 @@ describe('Result::accumulate8', function (): void {
 
     it('collects all errors when all fail', function (): void {
         $result = Result::accumulate8(
-            fn () => Result::failure('e1'),
-            fn () => Result::failure('e2'),
-            fn () => Result::failure('e3'),
-            fn () => Result::failure('e4'),
-            fn () => Result::failure('e5'),
-            fn () => Result::failure('e6'),
-            fn () => Result::failure('e7'),
-            fn () => Result::failure('e8'),
+            Result::failure('e1'),
+            Result::failure('e2'),
+            Result::failure('e3'),
+            Result::failure('e4'),
+            Result::failure('e5'),
+            Result::failure('e6'),
+            Result::failure('e7'),
+            Result::failure('e8'),
             fn (int $a, int $b, int $c, int $d, int $e, int $f, int $g, int $h) => $a + $b + $c + $d + $e + $f + $g + $h
         );
 
@@ -580,15 +624,15 @@ describe('Result::accumulate8', function (): void {
 describe('Result::accumulate9', function (): void {
     it('returns Success with transformed value when all are Success', function (): void {
         $result = Result::accumulate9(
-            fn () => Result::success(1),
-            fn () => Result::success(2),
-            fn () => Result::success(3),
-            fn () => Result::success(4),
-            fn () => Result::success(5),
-            fn () => Result::success(6),
-            fn () => Result::success(7),
-            fn () => Result::success(8),
-            fn () => Result::success(9),
+            Result::success(1),
+            Result::success(2),
+            Result::success(3),
+            Result::success(4),
+            Result::success(5),
+            Result::success(6),
+            Result::success(7),
+            Result::success(8),
+            Result::success(9),
             fn (int $a, int $b, int $c, int $d, int $e, int $f, int $g, int $h, int $i) => $a + $b + $c + $d + $e + $f + $g + $h + $i
         );
 
@@ -598,15 +642,15 @@ describe('Result::accumulate9', function (): void {
 
     it('collects errors from failed Results', function (): void {
         $result = Result::accumulate9(
-            fn () => Result::success(1),
-            fn () => Result::failure('e2'),
-            fn () => Result::success(3),
-            fn () => Result::failure('e4'),
-            fn () => Result::success(5),
-            fn () => Result::success(6),
-            fn () => Result::failure('e7'),
-            fn () => Result::success(8),
-            fn () => Result::failure('e9'),
+            Result::success(1),
+            Result::failure('e2'),
+            Result::success(3),
+            Result::failure('e4'),
+            Result::success(5),
+            Result::success(6),
+            Result::failure('e7'),
+            Result::success(8),
+            Result::failure('e9'),
             fn (int $a, int $b, int $c, int $d, int $e, int $f, int $g, int $h, int $i) => $a + $b + $c + $d + $e + $f + $g + $h + $i
         );
 
@@ -616,15 +660,15 @@ describe('Result::accumulate9', function (): void {
 
     it('collects all errors when all fail', function (): void {
         $result = Result::accumulate9(
-            fn () => Result::failure('e1'),
-            fn () => Result::failure('e2'),
-            fn () => Result::failure('e3'),
-            fn () => Result::failure('e4'),
-            fn () => Result::failure('e5'),
-            fn () => Result::failure('e6'),
-            fn () => Result::failure('e7'),
-            fn () => Result::failure('e8'),
-            fn () => Result::failure('e9'),
+            Result::failure('e1'),
+            Result::failure('e2'),
+            Result::failure('e3'),
+            Result::failure('e4'),
+            Result::failure('e5'),
+            Result::failure('e6'),
+            Result::failure('e7'),
+            Result::failure('e8'),
+            Result::failure('e9'),
             fn (int $a, int $b, int $c, int $d, int $e, int $f, int $g, int $h, int $i) => $a + $b + $c + $d + $e + $f + $g + $h + $i
         );
 
@@ -634,15 +678,15 @@ describe('Result::accumulate9', function (): void {
 
     it('passes all 9 arguments correctly to transform', function (): void {
         $result = Result::accumulate9(
-            fn () => Result::success('a'),
-            fn () => Result::success('b'),
-            fn () => Result::success('c'),
-            fn () => Result::success('d'),
-            fn () => Result::success('e'),
-            fn () => Result::success('f'),
-            fn () => Result::success('g'),
-            fn () => Result::success('h'),
-            fn () => Result::success('i'),
+            Result::success('a'),
+            Result::success('b'),
+            Result::success('c'),
+            Result::success('d'),
+            Result::success('e'),
+            Result::success('f'),
+            Result::success('g'),
+            Result::success('h'),
+            Result::success('i'),
             fn (string $a, string $b, string $c, string $d, string $e, string $f, string $g, string $h, string $i) => $a . $b . $c . $d . $e . $f . $g . $h . $i
         );
 

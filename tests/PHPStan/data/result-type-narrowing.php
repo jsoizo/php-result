@@ -139,3 +139,14 @@ function testFlattenKeepsNonNestedTypes(Result $result): void
 
     assertType('Jsoizo\Result\Result<int, string>', $flattened);
 }
+
+function testSequenceCollectsValuesOrErrors(): void
+{
+    $sequenced = Result::sequence([
+        Result::success(1),
+        Result::success(2),
+        Result::failure('error'),
+    ]);
+
+    assertType('Jsoizo\Result\Result<list<int>, non-empty-list<string>>', $sequenced);
+}
