@@ -85,6 +85,7 @@ $result = Result::binding(function () use ($orderId) {
     return $items;
 });
 // Returns Result<list<Item>, Throwable> - short-circuits on first failure
+// Every yielded value must be a Result; invalid yields throw ResultException.
 
 // Accumulate errors from multiple independent validations
 $result = Result::accumulate3(

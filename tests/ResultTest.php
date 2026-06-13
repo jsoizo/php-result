@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Jsoizo\Result\Failure;
 use Jsoizo\Result\Result;
+use Jsoizo\Result\ResultException;
 use Jsoizo\Result\Success;
 
 describe('Result::success', function (): void {
@@ -200,6 +201,34 @@ describe('Result::binding', function (): void {
 
         expect($result)->toBeInstanceOf(Success::class);
         expect($result->getOrElse(0))->toBe(42);
+    });
+
+    it('throws when generator yields null', function (): void {
+        // @phpstan-ignore-next-line argument.type (Testing invalid generator yield)
+        expect(fn () => Result::binding(function () {
+            /** @var int $x */
+            $x = yield Result::success(1);
+            yield;
+
+            return $x;
+        }))->toThrow(
+            ResultException::class,
+            'binding() generator must yield Result instances, got: null'
+        );
+    });
+
+    it('throws when generator yields non-Result value', function (): void {
+        // @phpstan-ignore-next-line argument.type (Testing invalid generator yield)
+        expect(fn () => Result::binding(function () {
+            /** @var int $x */
+            $x = yield Result::success(1);
+            yield 42;
+
+            return $x;
+        }))->toThrow(
+            ResultException::class,
+            'binding() generator must yield Result instances, got: int'
+        );
     });
 });
 

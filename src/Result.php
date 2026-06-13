@@ -108,6 +108,11 @@ abstract class Result
 
             if ($result instanceof Success) {
                 $generator->send($result->get());
+            } else {
+                throw new ResultException(
+                    'binding() generator must yield Result instances, got: '
+                    . get_debug_type($result)
+                );
             }
         }
 

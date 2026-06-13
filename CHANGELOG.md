@@ -13,6 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Changed `flatMap()` type definitions to preserve the original error type as `E|E1` instead of dropping `E`
 
+### Fixed
+- Fixed `Result::binding()` hanging forever when a generator yields a non-Result value
+
 ## [0.2.1] - 2026-02-06
 
 ### Fixed
