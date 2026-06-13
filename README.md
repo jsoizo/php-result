@@ -76,6 +76,7 @@ $value = $result->getOrNull(); // T|null
 // Flatten nested Results
 $nested = Result::success(Result::success(42));
 $flat = $nested->flatten(); // Success(42)
+// Result<Result<int, string>, string> becomes Result<int, string>.
 
 // Monad comprehension with binding (avoids nested flatMap)
 $result = Result::binding(function () use ($orderId) {
@@ -162,6 +163,18 @@ $recovered = $result->recover(fn(string $error) => false);
 ```
 
 After `recover()`, the Result can no longer be a Failure. `recoverWith()` keeps the callback's error type because the fallback operation may still fail.
+
+### Flattening Nested Results
+
+`flatten()` preserves nested generic types. If the success value is another `Result`, the inner success type is used and the outer and inner error types are combined:
+
+```php
+/** @var Result<Result<int, DbError>, ValidationError> $result */
+$flat = $result->flatten();
+// Result<int, ValidationError|DbError>
+```
+
+Calling `flatten()` on a non-nested Result keeps the original type.
 
 ## PHPStan Integration
 

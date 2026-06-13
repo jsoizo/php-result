@@ -623,7 +623,9 @@ abstract class Result
      * If the success value is not a Result, returns this Result unchanged.
      * For Failure, returns the Failure unchanged.
      *
-     * @return Result<mixed, mixed> The flattened Result
+     * @return (T is \Jsoizo\Result\Result<*, *>
+     *     ? \Jsoizo\Result\Result<template-type<T, \Jsoizo\Result\Result, 'T'>, E|template-type<T, \Jsoizo\Result\Result, 'E'>>
+     *     : Result<T, E>)
      */
     abstract public function flatten(): Result;
 }

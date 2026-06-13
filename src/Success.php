@@ -233,7 +233,9 @@ final class Success extends Result
      *
      * For Success, if the value is a Result, returns it. Otherwise returns this Success.
      *
-     * @return Result<mixed, mixed> The inner Result or this Success
+     * @return (T is \Jsoizo\Result\Result<*, *>
+     *     ? \Jsoizo\Result\Result<template-type<T, \Jsoizo\Result\Result, 'T'>, E|template-type<T, \Jsoizo\Result\Result, 'E'>>
+     *     : Result<T, E>)
      */
     public function flatten(): Result
     {

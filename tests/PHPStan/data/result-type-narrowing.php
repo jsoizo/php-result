@@ -109,3 +109,33 @@ function testRecoverWithCanChangeSuccessAndErrorTypes(Result $result): void
 
     assertType('Jsoizo\Result\Result<int, RuntimeException>', $recovered);
 }
+
+/**
+ * @param Result<Result<int, string>, string> $result
+ */
+function testFlattenPreservesNestedTypes(Result $result): void
+{
+    $flattened = $result->flatten();
+
+    assertType('Jsoizo\Result\Result<int, string>', $flattened);
+}
+
+/**
+ * @param Result<Result<int, string>, int> $result
+ */
+function testFlattenUnionsOuterAndInnerErrorTypes(Result $result): void
+{
+    $flattened = $result->flatten();
+
+    assertType('Jsoizo\Result\Result<int, int|string>', $flattened);
+}
+
+/**
+ * @param Result<int, string> $result
+ */
+function testFlattenKeepsNonNestedTypes(Result $result): void
+{
+    $flattened = $result->flatten();
+
+    assertType('Jsoizo\Result\Result<int, string>', $flattened);
+}
