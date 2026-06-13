@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - `Result::accumulate2()` through `Result::accumulate9()` for combining multiple Results with error accumulation
 
+### Changed
+- Changed `flatMap()` type definitions to preserve the original error type as `E|E1` instead of dropping `E`
+
 ## [0.2.1] - 2026-02-06
 
 ### Fixed

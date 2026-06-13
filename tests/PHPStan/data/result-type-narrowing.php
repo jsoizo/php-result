@@ -8,6 +8,14 @@ use Jsoizo\Result\Result;
 
 use function PHPStan\Testing\assertType;
 
+final class ValidationError
+{
+}
+
+final class DbError
+{
+}
+
 /**
  * @param Result<int, string> $result
  */
@@ -70,4 +78,14 @@ function testComplexTypes(Result $result): void
     } else {
         assertType('Jsoizo\Result\Failure<array{name: string}, Exception>', $result);
     }
+}
+
+/**
+ * @param Result<string, ValidationError> $result
+ */
+function testFlatMapPreservesOriginalError(Result $result): void
+{
+    $mapped = $result->flatMap(fn (string $value) => Result::failure(new DbError()));
+
+    assertType('Jsoizo\Result\Result<never, Jsoizo\Result\Tests\PHPStan\Data\DbError|Jsoizo\Result\Tests\PHPStan\Data\ValidationError>', $mapped);
 }

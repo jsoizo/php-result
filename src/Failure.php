@@ -117,7 +117,7 @@ final class Failure extends Result
      * @template U The success type of the resulting Result (unused)
      * @template F The error type of the resulting Result (unused)
      * @param callable(T): Result<U, F> $fn The function (not called)
-     * @return Result<U, F> This Failure instance (type-widened for compatibility)
+     * @return Result<U, E|F> This Failure instance (type-widened for compatibility)
      */
     public function flatMap(callable $fn): Result
     {

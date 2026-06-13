@@ -53,6 +53,7 @@ $message = $result->fold(
 $result = validateEmail($input['email'])
     ->flatMap(fn($email) => validatePassword($input['password'])
     ->flatMap(fn($password) => createUser($email, $password)));
+// If each step can fail differently, the error type is the union of all possible errors.
 
 // Recover from failure with default value
 $recovered = $failure->recover(fn($e) => 'default'); // Success('default')
@@ -135,6 +136,18 @@ $result = Result::accumulate3(
 | `tapError($fn)` | Execute side effect on error value, return same Result |
 | `getOrNull()` | Get success value or null |
 | `flatten()` | Flatten nested `Result<Result<T, E>, E>` into `Result<T, E>` |
+
+### Error Types in flatMap
+
+`flatMap()` preserves both the original error type and the error type returned by the callback:
+
+```php
+/** @var Result<string, ValidationError> $result */
+$saved = $result->flatMap(fn(string $value) => save($value));
+// If save() returns Result<User, DbError>, $saved is Result<User, ValidationError|DbError>.
+```
+
+Long chains can naturally produce wide error unions. When that becomes awkward, normalize errors with `mapError()` to a domain-specific error type at a boundary.
 
 ## PHPStan Integration
 
@@ -232,4 +245,3 @@ return match (true) {
 ```
 
 The custom rule in this library ensures exhaustiveness, so it's safe to ignore `match.unhandled` for Result types.
-
