@@ -75,7 +75,7 @@ final class Failure extends Result
         if ($this->error instanceof \Throwable) {
             throw $this->error;
         }
-        throw new ResultException('Result is a failure');
+        throw new ResultException('Result is a failure: ' . get_debug_type($this->error));
     }
 
     /**

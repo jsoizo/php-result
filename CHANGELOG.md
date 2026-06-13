@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Changed `recover()` type definitions to return `never` as the error type after successful recovery
 - Changed `flatten()` type definitions to preserve nested success and error types
 - Changed unreleased `Result::accumulate2()` through `Result::accumulate9()` APIs to accept Result instances directly instead of callables
+- Improved non-Throwable `Failure::get()` exception messages by including the error value type
 
 ### Fixed
 - Fixed `Result::binding()` hanging forever when a generator yields a non-Result value

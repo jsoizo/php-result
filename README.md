@@ -19,6 +19,10 @@ A type-safe Result type for PHP 8.1+ with PHPStan support.
 composer require jsoizo/php-result
 ```
 
+## Requirements
+
+The library runtime supports PHP 8.1+. The development and test tooling in this repository requires PHP 8.2+ because the locked Pest/PHPUnit toolchain requires PHP 8.2.
+
 ## Basic Usage
 
 ```php
@@ -282,3 +286,7 @@ return match (true) {
 ```
 
 The custom rule in this library ensures exhaustiveness, so it's safe to ignore `match.unhandled` for Result types.
+
+**Limitations:**
+
+The custom rule tracks simple variables in `instanceof` match arms, such as `$result instanceof Success`. It intentionally does not check property fetches or method calls such as `$this->result instanceof Success` or `$this->getResult() instanceof Success`.
