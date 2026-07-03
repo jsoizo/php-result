@@ -93,8 +93,8 @@ $result = Result::binding(function () use ($orderId) {
 // Returns Result<list<Item>, Throwable> - short-circuits on first failure
 // Every yielded value must be a Result; invalid yields throw ResultException.
 
-// Sequence a list of Results, collecting all errors
-$result = Result::sequence([
+// Accumulate a list of Results into one, collecting all errors
+$result = Result::accumulate([
     validateName($input['name']),
     validateAge($input['age']),
     validateEmail($input['email']),
@@ -113,6 +113,8 @@ $result = Result::accumulate3(
 // Any Failure → Failure(['Name required', 'Invalid email']) (non-empty-list of errors)
 ```
 
+Use `accumulate($results)` for a homogeneous list of same-typed Results; use `accumulate2()`–`accumulate9()` to combine differently-typed Results into one value via a transform function.
+
 ## API
 
 ### Factory Methods
@@ -123,7 +125,7 @@ $result = Result::accumulate3(
 | `Result::failure($error)` | Create a Failure |
 | `Result::catch(callable $fn)` | Wrap exception-throwing code |
 | `Result::binding(callable $fn)` | Monad comprehension using generators |
-| `Result::sequence($results)` | Convert a list of Results into one Result, collecting all errors |
+| `Result::accumulate($results)` | Convert a list of Results into one Result, collecting all errors |
 | `Result::accumulate2($r1, ..., $transform)` | Combine 2 Results, collecting all errors |
 | `Result::accumulate3($r1, ..., $transform)` | Combine 3 Results, collecting all errors |
 | `Result::accumulate4($r1, ..., $transform)` | Combine 4 Results, collecting all errors |
@@ -152,7 +154,7 @@ $result = Result::accumulate3(
 | `tap($fn)` | Execute side effect on success value, return same Result |
 | `tapError($fn)` | Execute side effect on error value, return same Result |
 | `getOrNull()` | Get success value or null |
-| `flatten()` | Flatten nested `Result<Result<T, E>, E>` into `Result<T, E>` |
+| `flatten()` | Flatten nested `Result<Result<T, E1>, E2>` into `Result<T, E1\|E2>` |
 
 ### Error Types in flatMap
 
