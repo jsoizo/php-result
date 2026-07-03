@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-07-03
+
 ### Added
 - `getErrorOrNull()` method for extracting error as nullable (symmetric with `getOrNull()`)
 - `Result::sequence()` for converting a list of Results into one Result with fail-fast semantics, returning the first error unwrapped; throws `ResultException` if any element is not a Result instance
