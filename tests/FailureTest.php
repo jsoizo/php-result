@@ -41,6 +41,36 @@ describe('Failure', function (): void {
         });
     });
 
+    describe('getOr', function (): void {
+        it('computes fallback from error', function (): void {
+            /** @var Failure<int, string> $result */
+            $result = Result::failure('error');
+
+            expect($result->getOr(fn ($e) => strlen($e)))->toBe(5);
+        });
+
+        it('passes error value to callback', function (): void {
+            $captured = null;
+            /** @var Failure<int, string> $result */
+            $result = Result::failure('error message');
+            $value = $result->getOr(function ($e) use (&$captured): int {
+                $captured = $e;
+
+                return 0;
+            });
+
+            expect($value)->toBe(0);
+            expect($captured)->toBe('error message');
+        });
+
+        it('returns null fallback', function (): void {
+            /** @var Failure<int, string> $result */
+            $result = Result::failure('error');
+
+            expect($result->getOr(fn ($e) => null))->toBeNull();
+        });
+    });
+
     describe('get', function (): void {
         it('throws Throwable error', function (): void {
             $exception = new RuntimeException('oops');
@@ -152,6 +182,29 @@ describe('Failure', function (): void {
             $result = Result::failure(null);
 
             expect($result->getErrorOrElse(null))->toBeNull();
+        });
+    });
+
+    describe('getErrorOr', function (): void {
+        it('returns error', function (): void {
+            /** @var Failure<int, string> $result */
+            $result = Result::failure('error message');
+
+            expect($result->getErrorOr(fn ($v) => 'fallback'))->toBe('error message');
+        });
+
+        it('callback is not called', function (): void {
+            $called = false;
+            /** @var Failure<int, string> $result */
+            $result = Result::failure('error');
+            $error = $result->getErrorOr(function ($v) use (&$called): string {
+                $called = true;
+
+                return 'fallback';
+            });
+
+            expect($error)->toBe('error');
+            expect($called)->toBeFalse();
         });
     });
 

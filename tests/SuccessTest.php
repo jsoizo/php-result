@@ -46,6 +46,29 @@ describe('Success', function (): void {
         });
     });
 
+    describe('getOr', function (): void {
+        it('returns value', function (): void {
+            /** @var Success<int, string> $result */
+            $result = Result::success(42);
+
+            expect($result->getOr(fn ($e) => 0))->toBe(42);
+        });
+
+        it('callback is not called', function (): void {
+            $called = false;
+            /** @var Success<int, string> $result */
+            $result = Result::success(42);
+            $value = $result->getOr(function ($e) use (&$called): int {
+                $called = true;
+
+                return 0;
+            });
+
+            expect($value)->toBe(42);
+            expect($called)->toBeFalse();
+        });
+    });
+
     describe('get', function (): void {
         it('returns value', function (): void {
             $result = Result::success(42);
@@ -158,6 +181,22 @@ describe('Success', function (): void {
             $result = Result::success(42);
 
             expect($result->getErrorOrElse(null))->toBeNull();
+        });
+    });
+
+    describe('getErrorOr', function (): void {
+        it('computes fallback from value', function (): void {
+            /** @var Success<int, string> $result */
+            $result = Result::success(42);
+
+            expect($result->getErrorOr(fn ($v) => "no error for $v"))->toBe('no error for 42');
+        });
+
+        it('returns null fallback', function (): void {
+            /** @var Success<int, string> $result */
+            $result = Result::success(42);
+
+            expect($result->getErrorOr(fn ($v) => null))->toBeNull();
         });
     });
 
