@@ -47,6 +47,27 @@ function testCatchWithExceptionClassNarrowsError(string $json): void
     assertType('Jsoizo\Result\Result<mixed, JsonException>', $caught);
 }
 
+function testFromNullableSubtractsNullFromValueType(?ValidationError $maybe): void
+{
+    $result = Result::fromNullable($maybe, fn (): string => 'missing');
+
+    assertType('Jsoizo\Result\Result<Jsoizo\Result\Tests\PHPStan\Data\ValidationError, string>', $result);
+}
+
+function testFromNullableInfersErrorTypeFromCallable(?int $maybe): void
+{
+    $result = Result::fromNullable($maybe, fn () => new DbError());
+
+    assertType('Jsoizo\Result\Result<int, Jsoizo\Result\Tests\PHPStan\Data\DbError>', $result);
+}
+
+function testFromNullableKeepsNonNullableValueType(int $value): void
+{
+    $result = Result::fromNullable($value, fn (): string => 'missing');
+
+    assertType('Jsoizo\Result\Result<int, string>', $result);
+}
+
 /**
  * @param Result<int, string> $result
  */
