@@ -64,6 +64,20 @@ final class Success extends Result
     /**
      * {@inheritDoc}
      *
+     * For Success, always returns the contained value. The function is not called.
+     *
+     * @template T1
+     * @param callable(E): T1 $fn The fallback function (not called)
+     * @return T The contained success value
+     */
+    public function getOr(callable $fn): mixed
+    {
+        return $this->value;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
      * For Success, always returns the contained value without throwing.
      *
      * @return T The contained success value
@@ -129,6 +143,20 @@ final class Success extends Result
     public function getErrorOrElse(mixed $default): mixed
     {
         return $default;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * For Success, computes the fallback by applying the function to the contained value.
+     *
+     * @template E1
+     * @param callable(T): E1 $fn The fallback function receiving the success value
+     * @return E1 The computed fallback
+     */
+    public function getErrorOr(callable $fn): mixed
+    {
+        return $fn($this->value);
     }
 
     /**

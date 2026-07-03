@@ -278,6 +278,28 @@ function testFallbackMethodsUnionDefaults(Result $result): void
 /**
  * @param Result<int, string> $result
  */
+function testLazyFallbackMethodsUnionCallbackReturnTypes(Result $result): void
+{
+    assertType('bool|int', $result->getOr(fn (string $error): bool => strlen($error) > 0));
+    assertType('RuntimeException|string', $result->getErrorOr(fn (int $value) => new \RuntimeException()));
+}
+
+/**
+ * @param Success<int, string> $success
+ * @param Failure<int, string> $failure
+ */
+function testLazyFallbackMethodsOnConcreteClasses(Success $success, Failure $failure): void
+{
+    assertType('int', $success->getOr(fn (string $error): bool => strlen($error) > 0));
+    assertType('RuntimeException', $success->getErrorOr(fn (int $value) => new \RuntimeException()));
+
+    assertType('bool', $failure->getOr(fn (string $error): bool => strlen($error) > 0));
+    assertType('string', $failure->getErrorOr(fn (int $value) => new \RuntimeException()));
+}
+
+/**
+ * @param Result<int, string> $result
+ */
 function testFoldUnionsCallbackReturnTypes(Result $result): void
 {
     $folded = $result->fold(

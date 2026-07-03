@@ -530,6 +530,18 @@ abstract class Result
     abstract public function getOrElse(mixed $default): mixed;
 
     /**
+     * Returns the success value, or computes a fallback from the error if this is a Failure.
+     *
+     * Unlike getOrElse(), the fallback is evaluated lazily: the callable is only
+     * invoked for Failure, and it receives the error value to build the fallback.
+     *
+     * @template T1
+     * @param callable(E): T1 $fn The fallback function receiving the error value
+     * @return T|T1 The success value or the computed fallback
+     */
+    abstract public function getOr(callable $fn): mixed;
+
+    /**
      * Returns the success value, or throws an exception if this is a Failure.
      *
      * For Success, returns the contained value. For Failure, throws the error
@@ -589,6 +601,18 @@ abstract class Result
      * @return E|D The error value or the default
      */
     abstract public function getErrorOrElse(mixed $default): mixed;
+
+    /**
+     * Returns the error value, or computes a fallback from the success value if this is a Success.
+     *
+     * Unlike getErrorOrElse(), the fallback is evaluated lazily: the callable is only
+     * invoked for Success, and it receives the success value to build the fallback.
+     *
+     * @template E1
+     * @param callable(T): E1 $fn The fallback function receiving the success value
+     * @return E|E1 The error value or the computed fallback
+     */
+    abstract public function getErrorOr(callable $fn): mixed;
 
     /**
      * Returns the error value, or throws an exception if this is a Success.

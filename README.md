@@ -44,6 +44,10 @@ $result = $success
 // Get value with default
 $value = $failure->getOrElse(0); // 0
 
+// Get value with lazy fallback computed from the error
+$value = $failure->getOr(fn($error) => strlen($error)); // 13
+// The callback is only invoked on Failure, so expensive defaults are never built on success.
+
 // Catch exceptions
 $result = Result::catch(fn() => riskyOperation());
 
@@ -170,8 +174,10 @@ Use `accumulate($results)` for a homogeneous list of same-typed Results; use `ac
 | `isSuccess()` | Returns true if Success |
 | `isFailure()` | Returns true if Failure |
 | `getOrElse($default)` | Get value or default |
+| `getOr($fn)` | Get value or compute fallback lazily from error |
 | `get()` | Get value or throw |
 | `getErrorOrElse($default)` | Get error or default |
+| `getErrorOr($fn)` | Get error or compute fallback lazily from value |
 | `getError()` | Get error or throw ResultException |
 | `map($fn)` | Transform success value |
 | `mapError($fn)` | Transform error value |

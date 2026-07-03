@@ -64,6 +64,20 @@ final class Failure extends Result
     /**
      * {@inheritDoc}
      *
+     * For Failure, computes the fallback by applying the function to the contained error.
+     *
+     * @template T1
+     * @param callable(E): T1 $fn The fallback function receiving the error value
+     * @return T1 The computed fallback
+     */
+    public function getOr(callable $fn): mixed
+    {
+        return $fn($this->error);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
      * For Failure, always throws an exception. If the error is a Throwable,
      * it is thrown directly. Otherwise, a ResultException is thrown.
      *
@@ -134,6 +148,20 @@ final class Failure extends Result
      * @return E The contained error value
      */
     public function getErrorOrElse(mixed $default): mixed
+    {
+        return $this->error;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * For Failure, always returns the contained error. The function is not called.
+     *
+     * @template E1
+     * @param callable(T): E1 $fn The fallback function (not called)
+     * @return E The contained error value
+     */
+    public function getErrorOr(callable $fn): mixed
     {
         return $this->error;
     }
