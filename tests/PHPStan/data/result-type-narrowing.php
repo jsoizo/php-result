@@ -277,6 +277,20 @@ function testGetOrNullUnionsNull(Result $result): void
     assertType('int|null', $result->getOrNull());
 }
 
+/**
+ * @param Result<int, string> $result
+ */
+function testGetErrorOrNullUnionsNull(Result $result): void
+{
+    assertType('string|null', $result->getErrorOrNull());
+
+    if ($result->isFailure()) {
+        assertType('string', $result->getErrorOrNull());
+    } else {
+        assertType('null', $result->getErrorOrNull());
+    }
+}
+
 function testAccumulateCollectsValuesOrErrors(): void
 {
     $accumulated = Result::accumulate([

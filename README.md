@@ -77,6 +77,11 @@ $result = validateInput($data)
 // Get value as nullable
 $value = $result->getOrNull(); // T|null
 
+// Get error as nullable
+if (($error = $result->getErrorOrNull()) !== null) {
+    logger()->error("Failed: $error");
+}
+
 // Flatten nested Results
 $nested = Result::success(Result::success(42));
 $flat = $nested->flatten(); // Success(42)
@@ -154,6 +159,7 @@ Use `accumulate($results)` for a homogeneous list of same-typed Results; use `ac
 | `tap($fn)` | Execute side effect on success value, return same Result |
 | `tapError($fn)` | Execute side effect on error value, return same Result |
 | `getOrNull()` | Get success value or null |
+| `getErrorOrNull()` | Get error value or null |
 | `flatten()` | Flatten nested `Result<Result<T, E1>, E2>` into `Result<T, E1\|E2>` |
 
 ### Error Types in flatMap

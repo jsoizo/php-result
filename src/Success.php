@@ -231,6 +231,18 @@ final class Success extends Result
     /**
      * {@inheritDoc}
      *
+     * For Success, returns null since there is no error value.
+     *
+     * @return null Always null
+     */
+    public function getErrorOrNull(): mixed
+    {
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
      * For Success, if the value is a Result, returns it. Otherwise returns this Success.
      *
      * @return (T is never

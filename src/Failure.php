@@ -238,6 +238,18 @@ final class Failure extends Result
     /**
      * {@inheritDoc}
      *
+     * For Failure, returns the contained error.
+     *
+     * @return E The error value
+     */
+    public function getErrorOrNull(): mixed
+    {
+        return $this->error;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
      * For Failure, returns this Failure unchanged. The success value can never
      * be a Result, so the type stays consistent with the abstract declaration.
      *
