@@ -230,20 +230,37 @@ describe('Result::binding', function (): void {
             'binding() generator must yield Result instances, got: int'
         );
     });
+
+    it('throws when callable does not return a Generator', function (): void {
+        // @phpstan-ignore-next-line argument.type (Testing invalid callable return)
+        expect(fn () => Result::binding(fn () => 42))->toThrow(
+            ResultException::class,
+            'binding() callable must return a Generator, got: int'
+        );
+    });
+
+    it('propagates exceptions thrown inside the generator', function (): void {
+        expect(fn () => Result::binding(function () {
+            /** @var int $x */
+            $x = yield Result::success(1);
+
+            throw new RuntimeException('boom');
+        }))->toThrow(RuntimeException::class, 'boom');
+    });
 });
 
-describe('Result::sequence', function (): void {
+describe('Result::accumulate', function (): void {
     it('returns Success with empty list for empty input', function (): void {
         /** @var list<Result<int, string>> $results */
         $results = [];
-        $result = Result::sequence($results);
+        $result = Result::accumulate($results);
 
         expect($result)->toBeInstanceOf(Success::class);
         expect($result->getOrElse(['fallback']))->toBe([]);
     });
 
     it('returns Success with values when all Results are Success', function (): void {
-        $result = Result::sequence([
+        $result = Result::accumulate([
             Result::success(1),
             Result::success(2),
             Result::success(3),
@@ -254,7 +271,7 @@ describe('Result::sequence', function (): void {
     });
 
     it('returns Failure with single error when one Result fails', function (): void {
-        $result = Result::sequence([
+        $result = Result::accumulate([
             Result::success(1),
             Result::failure('error'),
             Result::success(3),
@@ -265,7 +282,7 @@ describe('Result::sequence', function (): void {
     });
 
     it('collects all errors in input order', function (): void {
-        $result = Result::sequence([
+        $result = Result::accumulate([
             Result::failure('first'),
             Result::success(2),
             Result::failure('second'),
@@ -273,6 +290,14 @@ describe('Result::sequence', function (): void {
 
         expect($result)->toBeInstanceOf(Failure::class);
         expect($result->getErrorOrElse([]))->toBe(['first', 'second']);
+    });
+
+    it('throws when an element is not a Result instance', function (): void {
+        // @phpstan-ignore-next-line argument.type (Testing invalid list element)
+        expect(fn () => Result::accumulate([Result::success(1), 'oops']))->toThrow(
+            ResultException::class,
+            'accumulate() expects Result instances, got: string'
+        );
     });
 });
 

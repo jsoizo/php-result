@@ -94,10 +94,18 @@ abstract class Result
      * @template TError The error type
      * @param callable(): \Generator<int, Result<mixed, TError>, mixed, TValue> $fn
      * @return Result<TValue, TError>
+     * @throws ResultException If $fn does not return a Generator, or the generator yields a non-Result value
      */
     public static function binding(callable $fn): Result
     {
         $generator = $fn();
+
+        // @phpstan-ignore instanceof.alwaysTrue (guards callables that violate the PHPDoc return type at runtime)
+        if (!$generator instanceof \Generator) {
+            throw new ResultException(
+                'binding() callable must return a Generator, got: ' . get_debug_type($generator)
+            );
+        }
 
         while ($generator->valid()) {
             $result = $generator->current();
@@ -130,14 +138,22 @@ abstract class Result
      * @template E1
      * @param list<Result<T1, E1>> $results
      * @return Result<list<T1>, non-empty-list<E1>>
+     * @throws ResultException If any element of $results is not a Result instance
      */
-    public static function sequence(array $results): Result
+    public static function accumulate(array $results): Result
     {
         $values = [];
         $errors = [];
 
         foreach ($results as $result) {
-            if ($result instanceof Failure) {
+            // @phpstan-ignore instanceof.alwaysTrue (guards list elements that violate the PHPDoc param type at runtime)
+            if (!$result instanceof Result) {
+                throw new ResultException(
+                    'accumulate() expects Result instances, got: ' . get_debug_type($result)
+                );
+            }
+
+            if ($result->isFailure()) {
                 $errors[] = $result->getError();
 
                 continue;
@@ -147,11 +163,9 @@ abstract class Result
         }
 
         if ($errors !== []) {
-            /** @var non-empty-list<E1> $errors */
             return self::failure($errors);
         }
 
-        /** @var list<T1> $values */
         return self::success($values);
     }
 
@@ -176,7 +190,6 @@ abstract class Result
         $errors = self::collectErrors($r1, $r2);
 
         if ($errors !== []) {
-            /** @var non-empty-list<E1> $errors */
             return self::failure($errors);
         }
 
@@ -202,7 +215,6 @@ abstract class Result
         $errors = self::collectErrors($r1, $r2, $r3);
 
         if ($errors !== []) {
-            /** @var non-empty-list<E1> $errors */
             return self::failure($errors);
         }
 
@@ -230,7 +242,6 @@ abstract class Result
         $errors = self::collectErrors($r1, $r2, $r3, $r4);
 
         if ($errors !== []) {
-            /** @var non-empty-list<E1> $errors */
             return self::failure($errors);
         }
 
@@ -260,7 +271,6 @@ abstract class Result
         $errors = self::collectErrors($r1, $r2, $r3, $r4, $r5);
 
         if ($errors !== []) {
-            /** @var non-empty-list<E1> $errors */
             return self::failure($errors);
         }
 
@@ -292,7 +302,6 @@ abstract class Result
         $errors = self::collectErrors($r1, $r2, $r3, $r4, $r5, $r6);
 
         if ($errors !== []) {
-            /** @var non-empty-list<E1> $errors */
             return self::failure($errors);
         }
 
@@ -326,7 +335,6 @@ abstract class Result
         $errors = self::collectErrors($r1, $r2, $r3, $r4, $r5, $r6, $r7);
 
         if ($errors !== []) {
-            /** @var non-empty-list<E1> $errors */
             return self::failure($errors);
         }
 
@@ -362,7 +370,6 @@ abstract class Result
         $errors = self::collectErrors($r1, $r2, $r3, $r4, $r5, $r6, $r7, $r8);
 
         if ($errors !== []) {
-            /** @var non-empty-list<E1> $errors */
             return self::failure($errors);
         }
 
@@ -400,7 +407,6 @@ abstract class Result
         $errors = self::collectErrors($r1, $r2, $r3, $r4, $r5, $r6, $r7, $r8, $r9);
 
         if ($errors !== []) {
-            /** @var non-empty-list<E1> $errors */
             return self::failure($errors);
         }
 
@@ -607,9 +613,12 @@ abstract class Result
      * If the success value is not a Result, returns this Result unchanged.
      * For Failure, returns the Failure unchanged.
      *
-     * @return (T is \Jsoizo\Result\Result<*, *>
-     *     ? \Jsoizo\Result\Result<template-type<T, \Jsoizo\Result\Result, 'T'>, E|template-type<T, \Jsoizo\Result\Result, 'E'>>
-     *     : Result<T, E>)
+     * @return (T is never
+     *     ? Result<never, E>
+     *     : (T is \Jsoizo\Result\Result<*, *>
+     *         ? \Jsoizo\Result\Result<template-type<T, \Jsoizo\Result\Result, 'T'>, E|template-type<T, \Jsoizo\Result\Result, 'E'>>
+     *         : Result<T, E>))
+     * @phpstan-ignore conditionalType.alwaysFalse (never is a subtype of every type, so the outer branch must stay reachable for narrowed T)
      */
     abstract public function flatten(): Result;
 }

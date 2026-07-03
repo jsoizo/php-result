@@ -238,9 +238,15 @@ final class Failure extends Result
     /**
      * {@inheritDoc}
      *
-     * For Failure, returns this Failure unchanged.
+     * For Failure, returns this Failure unchanged. The success value can never
+     * be a Result, so the type stays consistent with the abstract declaration.
      *
-     * @return Failure<T, E> This Failure
+     * @return (T is never
+     *     ? Result<never, E>
+     *     : (T is \Jsoizo\Result\Result<*, *>
+     *         ? \Jsoizo\Result\Result<template-type<T, \Jsoizo\Result\Result, 'T'>, E|template-type<T, \Jsoizo\Result\Result, 'E'>>
+     *         : Result<T, E>))
+     * @phpstan-ignore conditionalType.alwaysFalse (never is a subtype of every type, so the outer branch must stay reachable for narrowed T)
      */
     public function flatten(): Result
     {

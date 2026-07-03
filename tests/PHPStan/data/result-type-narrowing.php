@@ -277,26 +277,26 @@ function testGetOrNullUnionsNull(Result $result): void
     assertType('int|null', $result->getOrNull());
 }
 
-function testSequenceCollectsValuesOrErrors(): void
+function testAccumulateCollectsValuesOrErrors(): void
 {
-    $sequenced = Result::sequence([
+    $accumulated = Result::accumulate([
         Result::success(1),
         Result::success(2),
         Result::failure('error'),
     ]);
 
-    assertType('Jsoizo\Result\Result<list<int>, non-empty-list<string>>', $sequenced);
+    assertType('Jsoizo\Result\Result<list<int>, non-empty-list<string>>', $accumulated);
 }
 
 /**
  * @param Result<int, ValidationError> $validationResult
  * @param Result<int, DbError> $dbResult
  */
-function testSequenceUnionsErrorTypes(Result $validationResult, Result $dbResult): void
+function testAccumulateUnionsErrorTypes(Result $validationResult, Result $dbResult): void
 {
-    $sequenced = Result::sequence([$validationResult, $dbResult]);
+    $accumulated = Result::accumulate([$validationResult, $dbResult]);
 
-    assertType('Jsoizo\Result\Result<list<int>, non-empty-list<Jsoizo\Result\Tests\PHPStan\Data\DbError|Jsoizo\Result\Tests\PHPStan\Data\ValidationError>>', $sequenced);
+    assertType('Jsoizo\Result\Result<list<int>, non-empty-list<Jsoizo\Result\Tests\PHPStan\Data\DbError|Jsoizo\Result\Tests\PHPStan\Data\ValidationError>>', $accumulated);
 }
 
 /**
@@ -312,6 +312,17 @@ function testAccumulate2InfersTransformAndErrors(Result $name, Result $age): voi
     );
 
     assertType('Jsoizo\Result\Result<array{name: string, age: int}, non-empty-list<Jsoizo\Result\Tests\PHPStan\Data\ValidationError>>', $accumulated);
+}
+
+/**
+ * @param Result<string, ValidationError> $r1
+ * @param Result<int, DbError> $r2
+ */
+function testAccumulate2UnionsErrorTypes(Result $r1, Result $r2): void
+{
+    $accumulated = Result::accumulate2($r1, $r2, fn (string $a, int $b): string => $a);
+
+    assertType('Jsoizo\Result\Result<string, non-empty-list<Jsoizo\Result\Tests\PHPStan\Data\DbError|Jsoizo\Result\Tests\PHPStan\Data\ValidationError>>', $accumulated);
 }
 
 /**
@@ -385,4 +396,29 @@ function testConcreteClassMethodsInferSpecificTypes(Success $success, Failure $f
     assertType('Jsoizo\Result\Result<string, Jsoizo\Result\Tests\PHPStan\Data\ValidationError|string>', $failure->flatMap($fn));
     assertType('Jsoizo\Result\Success<bool, never>', $failure->recover(fn (string $error): bool => false));
     assertType('Jsoizo\Result\Result<never, Jsoizo\Result\Tests\PHPStan\Data\DbError>', $failure->recoverWith(fn (string $error) => Result::failure(new DbError())));
+}
+
+/**
+ * @param Success<Result<int, string>, DbError> $nestedSuccess
+ * @param Failure<Result<int, string>, DbError> $nestedFailure
+ * @param Success<int, DbError> $plainSuccess
+ * @param Failure<int, DbError> $plainFailure
+ */
+function testConcreteFlattenInfersSpecificTypes(
+    Success $nestedSuccess,
+    Failure $nestedFailure,
+    Success $plainSuccess,
+    Failure $plainFailure,
+): void {
+    assertType('Jsoizo\Result\Result<int, Jsoizo\Result\Tests\PHPStan\Data\DbError|string>', $nestedSuccess->flatten());
+    assertType('Jsoizo\Result\Result<int, Jsoizo\Result\Tests\PHPStan\Data\DbError|string>', $nestedFailure->flatten());
+    assertType('Jsoizo\Result\Result<int, Jsoizo\Result\Tests\PHPStan\Data\DbError>', $plainSuccess->flatten());
+    assertType('Jsoizo\Result\Result<int, Jsoizo\Result\Tests\PHPStan\Data\DbError>', $plainFailure->flatten());
+}
+
+function testConcreteFlattenOnNeverReceiverStaysClean(): void
+{
+    $neverFailure = Result::failure(new DbError());
+
+    assertType('Jsoizo\Result\Result<never, Jsoizo\Result\Tests\PHPStan\Data\DbError>', $neverFailure->flatten());
 }

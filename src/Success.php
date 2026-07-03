@@ -141,7 +141,7 @@ final class Success extends Result
      */
     public function getError(): never
     {
-        throw new ResultException('Result is a success');
+        throw new ResultException('Result is a success: ' . get_debug_type($this->value));
     }
 
     /**
@@ -233,9 +233,12 @@ final class Success extends Result
      *
      * For Success, if the value is a Result, returns it. Otherwise returns this Success.
      *
-     * @return (T is \Jsoizo\Result\Result<*, *>
-     *     ? \Jsoizo\Result\Result<template-type<T, \Jsoizo\Result\Result, 'T'>, E|template-type<T, \Jsoizo\Result\Result, 'E'>>
-     *     : Result<T, E>)
+     * @return (T is never
+     *     ? Result<never, E>
+     *     : (T is \Jsoizo\Result\Result<*, *>
+     *         ? \Jsoizo\Result\Result<template-type<T, \Jsoizo\Result\Result, 'T'>, E|template-type<T, \Jsoizo\Result\Result, 'E'>>
+     *         : Result<T, E>))
+     * @phpstan-ignore conditionalType.alwaysFalse (never is a subtype of every type, so the outer branch must stay reachable for narrowed T)
      */
     public function flatten(): Result
     {
