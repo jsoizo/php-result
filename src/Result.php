@@ -720,7 +720,6 @@ abstract class Result
      *     : (T is \Jsoizo\Result\Result<*, *>
      *         ? \Jsoizo\Result\Result<template-type<T, \Jsoizo\Result\Result, 'T'>, E|template-type<T, \Jsoizo\Result\Result, 'E'>>
      *         : Result<T, E>))
-     * @phpstan-ignore conditionalType.alwaysFalse (never is a subtype of every type, so the outer branch must stay reachable for narrowed T)
      */
     abstract public function flatten(): Result;
 }
