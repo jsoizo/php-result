@@ -313,6 +313,28 @@ function testAccumulateUnionsErrorTypes(Result $validationResult, Result $dbResu
     assertType('Jsoizo\Result\Result<list<int>, non-empty-list<Jsoizo\Result\Tests\PHPStan\Data\DbError|Jsoizo\Result\Tests\PHPStan\Data\ValidationError>>', $accumulated);
 }
 
+function testSequenceKeepsErrorTypeUnwrapped(): void
+{
+    $sequenced = Result::sequence([
+        Result::success(1),
+        Result::success(2),
+        Result::failure('error'),
+    ]);
+
+    assertType('Jsoizo\Result\Result<list<int>, string>', $sequenced);
+}
+
+/**
+ * @param Result<int, ValidationError> $validationResult
+ * @param Result<int, DbError> $dbResult
+ */
+function testSequenceUnionsErrorTypes(Result $validationResult, Result $dbResult): void
+{
+    $sequenced = Result::sequence([$validationResult, $dbResult]);
+
+    assertType('Jsoizo\Result\Result<list<int>, Jsoizo\Result\Tests\PHPStan\Data\DbError|Jsoizo\Result\Tests\PHPStan\Data\ValidationError>', $sequenced);
+}
+
 /**
  * @param Result<string, ValidationError> $name
  * @param Result<int, ValidationError> $age

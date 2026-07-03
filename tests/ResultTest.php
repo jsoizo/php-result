@@ -301,6 +301,66 @@ describe('Result::accumulate', function (): void {
     });
 });
 
+describe('Result::sequence', function (): void {
+    it('returns Success with empty list for empty input', function (): void {
+        /** @var list<Result<int, string>> $results */
+        $results = [];
+        $result = Result::sequence($results);
+
+        expect($result)->toBeInstanceOf(Success::class);
+        expect($result->getOrElse(['fallback']))->toBe([]);
+    });
+
+    it('returns Success with values in input order when all Results are Success', function (): void {
+        $result = Result::sequence([
+            Result::success(1),
+            Result::success(2),
+            Result::success(3),
+        ]);
+
+        expect($result)->toBeInstanceOf(Success::class);
+        expect($result->getOrElse([]))->toBe([1, 2, 3]);
+    });
+
+    it('returns Failure with the unwrapped error when one Result fails', function (): void {
+        $result = Result::sequence([
+            Result::success(1),
+            Result::failure('error'),
+            Result::success(3),
+        ]);
+
+        expect($result)->toBeInstanceOf(Failure::class);
+        expect($result->getErrorOrElse('fallback'))->toBe('error');
+    });
+
+    it('returns the first error when multiple Results fail', function (): void {
+        $result = Result::sequence([
+            Result::failure('first'),
+            Result::success(2),
+            Result::failure('second'),
+        ]);
+
+        expect($result)->toBeInstanceOf(Failure::class);
+        expect($result->getErrorOrElse('fallback'))->toBe('first');
+    });
+
+    it('short-circuits without inspecting elements after the first Failure', function (): void {
+        // @phpstan-ignore-next-line argument.type (Testing short-circuit before element validation)
+        $result = Result::sequence([Result::failure('boom'), 'not a result']);
+
+        expect($result)->toBeInstanceOf(Failure::class);
+        expect($result->getErrorOrElse('fallback'))->toBe('boom');
+    });
+
+    it('throws when an element is not a Result instance', function (): void {
+        // @phpstan-ignore-next-line argument.type (Testing invalid list element)
+        expect(fn () => Result::sequence([Result::success(1), 'oops']))->toThrow(
+            ResultException::class,
+            'sequence() expects Result instances, got: string'
+        );
+    });
+});
+
 describe('Result::accumulate2', function (): void {
     it('returns Success with transformed value when all are Success', function (): void {
         $result = Result::accumulate2(

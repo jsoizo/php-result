@@ -170,6 +170,41 @@ abstract class Result
     }
 
     /**
+     * Converts a list of Results into a Result containing a list of values, failing fast.
+     *
+     * Iterates in input order and short-circuits on the first Failure, returning
+     * its error unwrapped. If every Result is a Success, returns a Success with
+     * values in input order. An empty list yields a Success with an empty list.
+     *
+     * @template T1
+     * @template E1
+     * @param list<Result<T1, E1>> $results
+     * @return Result<list<T1>, E1>
+     * @throws ResultException If any element of $results is not a Result instance
+     */
+    public static function sequence(array $results): Result
+    {
+        $values = [];
+
+        foreach ($results as $result) {
+            // @phpstan-ignore instanceof.alwaysTrue (guards list elements that violate the PHPDoc param type at runtime)
+            if (!$result instanceof Result) {
+                throw new ResultException(
+                    'sequence() expects Result instances, got: ' . get_debug_type($result)
+                );
+            }
+
+            if ($result->isFailure()) {
+                return self::failure($result->getError());
+            }
+
+            $values[] = $result->get();
+        }
+
+        return self::success($values);
+    }
+
+    /**
      * Combines two Results, collecting all errors on failure.
      *
      * Evaluates all Results without short-circuiting. If all are Success,

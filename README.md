@@ -107,6 +107,15 @@ $result = Result::accumulate([
 // All Success → Success([name, age, email])
 // Any Failure → Failure(['Name required', 'Invalid email']) (non-empty-list of errors)
 
+// Sequence a list of Results into one, stopping at the first error
+$result = Result::sequence([
+    loadConfig($path),
+    connectDb($dsn),
+    fetchUser($id),
+]);
+// All Success → Success([config, connection, user])
+// Any Failure → Failure('config not found') (first error, unwrapped)
+
 // Accumulate errors from multiple independent validations
 $result = Result::accumulate3(
     validateName($input['name']),
@@ -118,7 +127,7 @@ $result = Result::accumulate3(
 // Any Failure → Failure(['Name required', 'Invalid email']) (non-empty-list of errors)
 ```
 
-Use `accumulate($results)` for a homogeneous list of same-typed Results; use `accumulate2()`–`accumulate9()` to combine differently-typed Results into one value via a transform function.
+Use `accumulate($results)` for a homogeneous list of same-typed Results; use `accumulate2()`–`accumulate9()` to combine differently-typed Results into one value via a transform function. Use `sequence($results)` when you want fail-fast semantics instead: validation → `accumulate` (report all errors), sequential composition → `sequence` (stop at the first failure, error type stays as-is).
 
 ## API
 
@@ -131,6 +140,7 @@ Use `accumulate($results)` for a homogeneous list of same-typed Results; use `ac
 | `Result::catch(callable $fn)` | Wrap exception-throwing code |
 | `Result::binding(callable $fn)` | Monad comprehension using generators |
 | `Result::accumulate($results)` | Convert a list of Results into one Result, collecting all errors |
+| `Result::sequence($results)` | Convert a list of Results into one Result, stopping at the first error |
 | `Result::accumulate2($r1, ..., $transform)` | Combine 2 Results, collecting all errors |
 | `Result::accumulate3($r1, ..., $transform)` | Combine 3 Results, collecting all errors |
 | `Result::accumulate4($r1, ..., $transform)` | Combine 4 Results, collecting all errors |
