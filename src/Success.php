@@ -141,7 +141,7 @@ final class Success extends Result
      */
     public function getError(): never
     {
-        throw new ResultException('Result is a success');
+        throw new ResultException('Result is a success: ' . get_debug_type($this->value));
     }
 
     /**
@@ -164,10 +164,9 @@ final class Success extends Result
      *
      * For Success, returns this instance unchanged since there is no error to recover from.
      *
-     * @param callable(E): T $fn The recovery function (not called)
-     * @return Success<T, E> This Success instance
-     *
-     * @phpstan-ignore generics.variance (T is covariant but used in contravariant position in callable parameter for practical API design)
+     * @template T1 The type of the recovery value (unused)
+     * @param callable(E): T1 $fn The recovery function (not called)
+     * @return Success<T, never> This Success instance
      */
     public function recover(callable $fn): Success
     {
@@ -179,11 +178,10 @@ final class Success extends Result
      *
      * For Success, returns this instance unchanged since there is no error to recover from.
      *
+     * @template T1 The success type of the resulting Result (unused)
      * @template E1 The error type of the resulting Result (unused)
-     * @param callable(E): Result<T, E1> $fn The recovery function (not called)
-     * @return Success<T, E> This Success instance
-     *
-     * @phpstan-ignore generics.variance (T is covariant but used in contravariant position in callable parameter for practical API design)
+     * @param callable(E): Result<T1, E1> $fn The recovery function (not called)
+     * @return Success<T, never> This Success instance
      */
     public function recoverWith(callable $fn): Success
     {
@@ -235,7 +233,12 @@ final class Success extends Result
      *
      * For Success, if the value is a Result, returns it. Otherwise returns this Success.
      *
-     * @return Result<mixed, mixed> The inner Result or this Success
+     * @return (T is never
+     *     ? Result<never, E>
+     *     : (T is \Jsoizo\Result\Result<*, *>
+     *         ? \Jsoizo\Result\Result<template-type<T, \Jsoizo\Result\Result, 'T'>, E|template-type<T, \Jsoizo\Result\Result, 'E'>>
+     *         : Result<T, E>))
+     * @phpstan-ignore conditionalType.alwaysFalse (never is a subtype of every type, so the outer branch must stay reachable for narrowed T)
      */
     public function flatten(): Result
     {

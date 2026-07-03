@@ -1,6 +1,6 @@
 # php-result
 
-Type-safe Result type library for PHP 8.2+ with PHPStan support.
+Type-safe Result type library for PHP 8.1+ (dev tooling requires PHP 8.2+) with PHPStan support.
 
 ## Commands
 

@@ -52,13 +52,15 @@ describe('Failure', function (): void {
         it('throws ResultException for non-Throwable error', function (): void {
             $result = Result::failure('error string');
 
-            expect(fn () => $result->get())->toThrow(ResultException::class);
+            expect(fn () => $result->get())
+                ->toThrow(ResultException::class, 'Result is a failure: string');
         });
 
         it('throws ResultException for array error', function (): void {
             $result = Result::failure(['code' => 404, 'message' => 'Not Found']);
 
-            expect(fn () => $result->get())->toThrow(ResultException::class);
+            expect(fn () => $result->get())
+                ->toThrow(ResultException::class, 'Result is a failure: array');
         });
     });
 

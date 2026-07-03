@@ -75,7 +75,7 @@ final class Failure extends Result
         if ($this->error instanceof \Throwable) {
             throw $this->error;
         }
-        throw new ResultException('Result is a failure');
+        throw new ResultException('Result is a failure: ' . get_debug_type($this->error));
     }
 
     /**
@@ -117,7 +117,7 @@ final class Failure extends Result
      * @template U The success type of the resulting Result (unused)
      * @template F The error type of the resulting Result (unused)
      * @param callable(T): Result<U, F> $fn The function (not called)
-     * @return Result<U, F> This Failure instance (type-widened for compatibility)
+     * @return Result<U, E|F> This Failure instance (type-widened for compatibility)
      */
     public function flatMap(callable $fn): Result
     {
@@ -170,14 +170,13 @@ final class Failure extends Result
      *
      * Applies the function to the contained error and wraps the result in a new Success.
      *
-     * @param callable(E): T $fn The recovery function
-     * @return Success<T, E> A new Success containing the recovered value
-     *
-     * @phpstan-ignore generics.variance (T is covariant but used in contravariant position in callable parameter for practical API design)
+     * @template U The type of the recovery value
+     * @param callable(E): U $fn The recovery function
+     * @return Success<U, never> A new Success containing the recovered value
      */
     public function recover(callable $fn): Success
     {
-        /** @var Success<T, E> */
+        /** @var Success<U, never> */
         return new Success($fn($this->error));
     }
 
@@ -186,11 +185,10 @@ final class Failure extends Result
      *
      * Applies the function to the contained error and returns the resulting Result directly.
      *
+     * @template U The success type of the resulting Result
      * @template E1 The error type of the resulting Result
-     * @param callable(E): Result<T, E1> $fn The recovery function returning a new Result
-     * @return Result<T, E1> The Result returned by the function
-     *
-     * @phpstan-ignore generics.variance (T is covariant but used in contravariant position in callable parameter for practical API design)
+     * @param callable(E): Result<U, E1> $fn The recovery function returning a new Result
+     * @return Result<U, E1> The Result returned by the function
      */
     public function recoverWith(callable $fn): Result
     {
@@ -240,9 +238,15 @@ final class Failure extends Result
     /**
      * {@inheritDoc}
      *
-     * For Failure, returns this Failure unchanged.
+     * For Failure, returns this Failure unchanged. The success value can never
+     * be a Result, so the type stays consistent with the abstract declaration.
      *
-     * @return Failure<T, E> This Failure
+     * @return (T is never
+     *     ? Result<never, E>
+     *     : (T is \Jsoizo\Result\Result<*, *>
+     *         ? \Jsoizo\Result\Result<template-type<T, \Jsoizo\Result\Result, 'T'>, E|template-type<T, \Jsoizo\Result\Result, 'E'>>
+     *         : Result<T, E>))
+     * @phpstan-ignore conditionalType.alwaysFalse (never is a subtype of every type, so the outer branch must stay reachable for narrowed T)
      */
     public function flatten(): Result
     {

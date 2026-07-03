@@ -8,7 +8,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- `Result::accumulate2()` through `Result::accumulate9()` for combining multiple Results with error accumulation
+- `Result::accumulate2()` through `Result::accumulate9()` for combining multiple Result instances with error accumulation
+- `Result::accumulate()` for converting a list of Results into one Result while collecting all errors; throws `ResultException` if any element is not a Result instance
+
+### Changed
+- Changed `flatMap()` type signature to preserve the original error type
+  - Before: `@return Result<T1, E1>`
+  - After: `@return Result<T1, E|E1>`
+- Changed `recover()` type signature to allow a different recovery success type and return `never` as the error type
+  - Before: `@param callable(E): T $fn` / `@return Result<T, E>`
+  - After: `@param callable(E): T1 $fn` / `@return Result<T|T1, never>`
+- Changed `recoverWith()` type signature to allow a different recovery success type
+  - Before: `@param callable(E): Result<T, E1> $fn` / `@return Result<T, E1>`
+  - After: `@param callable(E): Result<T1, E1> $fn` / `@return Result<T|T1, E1>`
+- Changed `flatten()` type signature to preserve nested success and error types instead of widening to `mixed`
+  - Before: `@return Result<mixed, mixed>`
+  - After: `@return Result<T, E>` unchanged, or `Result<TInner, E|EInner>` if the success value is a `Result<TInner, EInner>`
+- Improved `Failure::get()` (non-Throwable errors) and `Success::getError()` exception messages by including the value's type
+
+### Fixed
+- Fixed `Result::binding()` hanging forever when a generator yields a non-Result value — it now throws `ResultException` instead
+- Fixed `Result::binding()` throwing an unclear PHP error when the callable does not return a `Generator` — it now throws `ResultException` with a descriptive message
 
 ## [0.2.1] - 2026-02-06
 

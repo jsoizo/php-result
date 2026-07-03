@@ -172,7 +172,14 @@ describe('Success', function (): void {
             $result = Result::success('value');
 
             expect(fn () => $result->getError())
-                ->toThrow(ResultException::class, 'Result is a success');
+                ->toThrow(ResultException::class, 'Result is a success: string');
+        });
+
+        it('throws ResultException for array value', function (): void {
+            $result = Result::success(['code' => 200, 'message' => 'OK']);
+
+            expect(fn () => $result->getError())
+                ->toThrow(ResultException::class, 'Result is a success: array');
         });
     });
 

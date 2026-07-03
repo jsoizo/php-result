@@ -94,10 +94,18 @@ abstract class Result
      * @template TError The error type
      * @param callable(): \Generator<int, Result<mixed, TError>, mixed, TValue> $fn
      * @return Result<TValue, TError>
+     * @throws ResultException If $fn does not return a Generator, or the generator yields a non-Result value
      */
     public static function binding(callable $fn): Result
     {
         $generator = $fn();
+
+        // @phpstan-ignore instanceof.alwaysTrue (guards callables that violate the PHPDoc return type at runtime)
+        if (!$generator instanceof \Generator) {
+            throw new ResultException(
+                'binding() callable must return a Generator, got: ' . get_debug_type($generator)
+            );
+        }
 
         while ($generator->valid()) {
             $result = $generator->current();
@@ -108,6 +116,11 @@ abstract class Result
 
             if ($result instanceof Success) {
                 $generator->send($result->get());
+            } else {
+                throw new ResultException(
+                    'binding() generator must yield Result instances, got: '
+                    . get_debug_type($result)
+                );
             }
         }
 
@@ -115,9 +128,51 @@ abstract class Result
     }
 
     /**
+     * Converts a list of Results into a Result containing a list of values.
+     *
+     * Collects every error instead of short-circuiting. If every Result is a
+     * Success, returns a Success with values in input order. If any Result is a
+     * Failure, returns a Failure with all errors in input order.
+     *
+     * @template T1
+     * @template E1
+     * @param list<Result<T1, E1>> $results
+     * @return Result<list<T1>, non-empty-list<E1>>
+     * @throws ResultException If any element of $results is not a Result instance
+     */
+    public static function accumulate(array $results): Result
+    {
+        $values = [];
+        $errors = [];
+
+        foreach ($results as $result) {
+            // @phpstan-ignore instanceof.alwaysTrue (guards list elements that violate the PHPDoc param type at runtime)
+            if (!$result instanceof Result) {
+                throw new ResultException(
+                    'accumulate() expects Result instances, got: ' . get_debug_type($result)
+                );
+            }
+
+            if ($result->isFailure()) {
+                $errors[] = $result->getError();
+
+                continue;
+            }
+
+            $values[] = $result->get();
+        }
+
+        if ($errors !== []) {
+            return self::failure($errors);
+        }
+
+        return self::success($values);
+    }
+
+    /**
      * Combines two Results, collecting all errors on failure.
      *
-     * Executes all callables and collects their Results. If all are Success,
+     * Evaluates all Results without short-circuiting. If all are Success,
      * applies the transform function to their values and returns a Success.
      * If any are Failure, collects all errors into a non-empty list.
      *
@@ -125,20 +180,16 @@ abstract class Result
      * @template T2
      * @template E1
      * @template U
-     * @param callable(): Result<T1, E1> $fn1
-     * @param callable(): Result<T2, E1> $fn2
+     * @param Result<T1, E1> $r1
+     * @param Result<T2, E1> $r2
      * @param callable(T1, T2): U $transform
      * @return Result<U, non-empty-list<E1>>
      */
-    public static function accumulate2(callable $fn1, callable $fn2, callable $transform): Result
+    public static function accumulate2(Result $r1, Result $r2, callable $transform): Result
     {
-        $r1 = $fn1();
-        $r2 = $fn2();
-
         $errors = self::collectErrors($r1, $r2);
 
         if ($errors !== []) {
-            /** @var non-empty-list<E1> $errors */
             return self::failure($errors);
         }
 
@@ -153,22 +204,17 @@ abstract class Result
      * @template T3
      * @template E1
      * @template U
-     * @param callable(): Result<T1, E1> $fn1
-     * @param callable(): Result<T2, E1> $fn2
-     * @param callable(): Result<T3, E1> $fn3
+     * @param Result<T1, E1> $r1
+     * @param Result<T2, E1> $r2
+     * @param Result<T3, E1> $r3
      * @param callable(T1, T2, T3): U $transform
      * @return Result<U, non-empty-list<E1>>
      */
-    public static function accumulate3(callable $fn1, callable $fn2, callable $fn3, callable $transform): Result
+    public static function accumulate3(Result $r1, Result $r2, Result $r3, callable $transform): Result
     {
-        $r1 = $fn1();
-        $r2 = $fn2();
-        $r3 = $fn3();
-
         $errors = self::collectErrors($r1, $r2, $r3);
 
         if ($errors !== []) {
-            /** @var non-empty-list<E1> $errors */
             return self::failure($errors);
         }
 
@@ -184,24 +230,18 @@ abstract class Result
      * @template T4
      * @template E1
      * @template U
-     * @param callable(): Result<T1, E1> $fn1
-     * @param callable(): Result<T2, E1> $fn2
-     * @param callable(): Result<T3, E1> $fn3
-     * @param callable(): Result<T4, E1> $fn4
+     * @param Result<T1, E1> $r1
+     * @param Result<T2, E1> $r2
+     * @param Result<T3, E1> $r3
+     * @param Result<T4, E1> $r4
      * @param callable(T1, T2, T3, T4): U $transform
      * @return Result<U, non-empty-list<E1>>
      */
-    public static function accumulate4(callable $fn1, callable $fn2, callable $fn3, callable $fn4, callable $transform): Result
+    public static function accumulate4(Result $r1, Result $r2, Result $r3, Result $r4, callable $transform): Result
     {
-        $r1 = $fn1();
-        $r2 = $fn2();
-        $r3 = $fn3();
-        $r4 = $fn4();
-
         $errors = self::collectErrors($r1, $r2, $r3, $r4);
 
         if ($errors !== []) {
-            /** @var non-empty-list<E1> $errors */
             return self::failure($errors);
         }
 
@@ -218,26 +258,19 @@ abstract class Result
      * @template T5
      * @template E1
      * @template U
-     * @param callable(): Result<T1, E1> $fn1
-     * @param callable(): Result<T2, E1> $fn2
-     * @param callable(): Result<T3, E1> $fn3
-     * @param callable(): Result<T4, E1> $fn4
-     * @param callable(): Result<T5, E1> $fn5
+     * @param Result<T1, E1> $r1
+     * @param Result<T2, E1> $r2
+     * @param Result<T3, E1> $r3
+     * @param Result<T4, E1> $r4
+     * @param Result<T5, E1> $r5
      * @param callable(T1, T2, T3, T4, T5): U $transform
      * @return Result<U, non-empty-list<E1>>
      */
-    public static function accumulate5(callable $fn1, callable $fn2, callable $fn3, callable $fn4, callable $fn5, callable $transform): Result
+    public static function accumulate5(Result $r1, Result $r2, Result $r3, Result $r4, Result $r5, callable $transform): Result
     {
-        $r1 = $fn1();
-        $r2 = $fn2();
-        $r3 = $fn3();
-        $r4 = $fn4();
-        $r5 = $fn5();
-
         $errors = self::collectErrors($r1, $r2, $r3, $r4, $r5);
 
         if ($errors !== []) {
-            /** @var non-empty-list<E1> $errors */
             return self::failure($errors);
         }
 
@@ -255,28 +288,20 @@ abstract class Result
      * @template T6
      * @template E1
      * @template U
-     * @param callable(): Result<T1, E1> $fn1
-     * @param callable(): Result<T2, E1> $fn2
-     * @param callable(): Result<T3, E1> $fn3
-     * @param callable(): Result<T4, E1> $fn4
-     * @param callable(): Result<T5, E1> $fn5
-     * @param callable(): Result<T6, E1> $fn6
+     * @param Result<T1, E1> $r1
+     * @param Result<T2, E1> $r2
+     * @param Result<T3, E1> $r3
+     * @param Result<T4, E1> $r4
+     * @param Result<T5, E1> $r5
+     * @param Result<T6, E1> $r6
      * @param callable(T1, T2, T3, T4, T5, T6): U $transform
      * @return Result<U, non-empty-list<E1>>
      */
-    public static function accumulate6(callable $fn1, callable $fn2, callable $fn3, callable $fn4, callable $fn5, callable $fn6, callable $transform): Result
+    public static function accumulate6(Result $r1, Result $r2, Result $r3, Result $r4, Result $r5, Result $r6, callable $transform): Result
     {
-        $r1 = $fn1();
-        $r2 = $fn2();
-        $r3 = $fn3();
-        $r4 = $fn4();
-        $r5 = $fn5();
-        $r6 = $fn6();
-
         $errors = self::collectErrors($r1, $r2, $r3, $r4, $r5, $r6);
 
         if ($errors !== []) {
-            /** @var non-empty-list<E1> $errors */
             return self::failure($errors);
         }
 
@@ -295,30 +320,21 @@ abstract class Result
      * @template T7
      * @template E1
      * @template U
-     * @param callable(): Result<T1, E1> $fn1
-     * @param callable(): Result<T2, E1> $fn2
-     * @param callable(): Result<T3, E1> $fn3
-     * @param callable(): Result<T4, E1> $fn4
-     * @param callable(): Result<T5, E1> $fn5
-     * @param callable(): Result<T6, E1> $fn6
-     * @param callable(): Result<T7, E1> $fn7
+     * @param Result<T1, E1> $r1
+     * @param Result<T2, E1> $r2
+     * @param Result<T3, E1> $r3
+     * @param Result<T4, E1> $r4
+     * @param Result<T5, E1> $r5
+     * @param Result<T6, E1> $r6
+     * @param Result<T7, E1> $r7
      * @param callable(T1, T2, T3, T4, T5, T6, T7): U $transform
      * @return Result<U, non-empty-list<E1>>
      */
-    public static function accumulate7(callable $fn1, callable $fn2, callable $fn3, callable $fn4, callable $fn5, callable $fn6, callable $fn7, callable $transform): Result
+    public static function accumulate7(Result $r1, Result $r2, Result $r3, Result $r4, Result $r5, Result $r6, Result $r7, callable $transform): Result
     {
-        $r1 = $fn1();
-        $r2 = $fn2();
-        $r3 = $fn3();
-        $r4 = $fn4();
-        $r5 = $fn5();
-        $r6 = $fn6();
-        $r7 = $fn7();
-
         $errors = self::collectErrors($r1, $r2, $r3, $r4, $r5, $r6, $r7);
 
         if ($errors !== []) {
-            /** @var non-empty-list<E1> $errors */
             return self::failure($errors);
         }
 
@@ -338,32 +354,22 @@ abstract class Result
      * @template T8
      * @template E1
      * @template U
-     * @param callable(): Result<T1, E1> $fn1
-     * @param callable(): Result<T2, E1> $fn2
-     * @param callable(): Result<T3, E1> $fn3
-     * @param callable(): Result<T4, E1> $fn4
-     * @param callable(): Result<T5, E1> $fn5
-     * @param callable(): Result<T6, E1> $fn6
-     * @param callable(): Result<T7, E1> $fn7
-     * @param callable(): Result<T8, E1> $fn8
+     * @param Result<T1, E1> $r1
+     * @param Result<T2, E1> $r2
+     * @param Result<T3, E1> $r3
+     * @param Result<T4, E1> $r4
+     * @param Result<T5, E1> $r5
+     * @param Result<T6, E1> $r6
+     * @param Result<T7, E1> $r7
+     * @param Result<T8, E1> $r8
      * @param callable(T1, T2, T3, T4, T5, T6, T7, T8): U $transform
      * @return Result<U, non-empty-list<E1>>
      */
-    public static function accumulate8(callable $fn1, callable $fn2, callable $fn3, callable $fn4, callable $fn5, callable $fn6, callable $fn7, callable $fn8, callable $transform): Result
+    public static function accumulate8(Result $r1, Result $r2, Result $r3, Result $r4, Result $r5, Result $r6, Result $r7, Result $r8, callable $transform): Result
     {
-        $r1 = $fn1();
-        $r2 = $fn2();
-        $r3 = $fn3();
-        $r4 = $fn4();
-        $r5 = $fn5();
-        $r6 = $fn6();
-        $r7 = $fn7();
-        $r8 = $fn8();
-
         $errors = self::collectErrors($r1, $r2, $r3, $r4, $r5, $r6, $r7, $r8);
 
         if ($errors !== []) {
-            /** @var non-empty-list<E1> $errors */
             return self::failure($errors);
         }
 
@@ -384,34 +390,23 @@ abstract class Result
      * @template T9
      * @template E1
      * @template U
-     * @param callable(): Result<T1, E1> $fn1
-     * @param callable(): Result<T2, E1> $fn2
-     * @param callable(): Result<T3, E1> $fn3
-     * @param callable(): Result<T4, E1> $fn4
-     * @param callable(): Result<T5, E1> $fn5
-     * @param callable(): Result<T6, E1> $fn6
-     * @param callable(): Result<T7, E1> $fn7
-     * @param callable(): Result<T8, E1> $fn8
-     * @param callable(): Result<T9, E1> $fn9
+     * @param Result<T1, E1> $r1
+     * @param Result<T2, E1> $r2
+     * @param Result<T3, E1> $r3
+     * @param Result<T4, E1> $r4
+     * @param Result<T5, E1> $r5
+     * @param Result<T6, E1> $r6
+     * @param Result<T7, E1> $r7
+     * @param Result<T8, E1> $r8
+     * @param Result<T9, E1> $r9
      * @param callable(T1, T2, T3, T4, T5, T6, T7, T8, T9): U $transform
      * @return Result<U, non-empty-list<E1>>
      */
-    public static function accumulate9(callable $fn1, callable $fn2, callable $fn3, callable $fn4, callable $fn5, callable $fn6, callable $fn7, callable $fn8, callable $fn9, callable $transform): Result
+    public static function accumulate9(Result $r1, Result $r2, Result $r3, Result $r4, Result $r5, Result $r6, Result $r7, Result $r8, Result $r9, callable $transform): Result
     {
-        $r1 = $fn1();
-        $r2 = $fn2();
-        $r3 = $fn3();
-        $r4 = $fn4();
-        $r5 = $fn5();
-        $r6 = $fn6();
-        $r7 = $fn7();
-        $r8 = $fn8();
-        $r9 = $fn9();
-
         $errors = self::collectErrors($r1, $r2, $r3, $r4, $r5, $r6, $r7, $r8, $r9);
 
         if ($errors !== []) {
-            /** @var non-empty-list<E1> $errors */
             return self::failure($errors);
         }
 
@@ -511,7 +506,7 @@ abstract class Result
      * @template T1 The success type of the resulting Result
      * @template E1 The error type of the resulting Result
      * @param callable(T): Result<T1, E1> $fn The function returning a new Result
-     * @return Result<T1, E1> The Result from the function, or the original Failure
+     * @return Result<T1, E|E1> The Result from the function, or the original Failure
      */
     abstract public function flatMap(callable $fn): Result;
 
@@ -557,10 +552,9 @@ abstract class Result
      * If this is a Failure, applies the function to the error and wraps the result
      * in a new Success. If this is a Success, returns the Success unchanged.
      *
-     * @param callable(E): T $fn The recovery function
-     * @return Result<T, E> A new Success with the recovered value, or the original Success
-     *
-     * @phpstan-ignore generics.variance (T is covariant but used in contravariant position in callable parameter for practical API design)
+     * @template T1 The type of the recovery value
+     * @param callable(E): T1 $fn The recovery function
+     * @return Result<T|T1, never> A new Success with the recovered value, or the original Success
      */
     abstract public function recover(callable $fn): Result;
 
@@ -571,11 +565,10 @@ abstract class Result
      * resulting Result directly. If this is a Success, returns the Success unchanged.
      * This allows chaining fallback operations or changing the error type.
      *
+     * @template T1 The success type of the resulting Result
      * @template E1 The error type of the resulting Result
-     * @param callable(E): Result<T, E1> $fn The recovery function returning a new Result
-     * @return Result<T, E1> The Result from the function, or the original Success
-     *
-     * @phpstan-ignore generics.variance (T is covariant but used in contravariant position in callable parameter for practical API design)
+     * @param callable(E): Result<T1, E1> $fn The recovery function returning a new Result
+     * @return Result<T|T1, E1> The Result from the function, or the original Success
      */
     abstract public function recoverWith(callable $fn): Result;
 
@@ -620,7 +613,12 @@ abstract class Result
      * If the success value is not a Result, returns this Result unchanged.
      * For Failure, returns the Failure unchanged.
      *
-     * @return Result<mixed, mixed> The flattened Result
+     * @return (T is never
+     *     ? Result<never, E>
+     *     : (T is \Jsoizo\Result\Result<*, *>
+     *         ? \Jsoizo\Result\Result<template-type<T, \Jsoizo\Result\Result, 'T'>, E|template-type<T, \Jsoizo\Result\Result, 'E'>>
+     *         : Result<T, E>))
+     * @phpstan-ignore conditionalType.alwaysFalse (never is a subtype of every type, so the outer branch must stay reachable for narrowed T)
      */
     abstract public function flatten(): Result;
 }

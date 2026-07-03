@@ -19,6 +19,10 @@ A type-safe Result type for PHP 8.1+ with PHPStan support.
 composer require jsoizo/php-result
 ```
 
+## Requirements
+
+The library runtime supports PHP 8.1+. The development and test tooling in this repository requires PHP 8.2+ because the locked Pest/PHPUnit toolchain requires PHP 8.2.
+
 ## Basic Usage
 
 ```php
@@ -53,9 +57,11 @@ $message = $result->fold(
 $result = validateEmail($input['email'])
     ->flatMap(fn($email) => validatePassword($input['password'])
     ->flatMap(fn($password) => createUser($email, $password)));
+// If each step can fail differently, the error type is the union of all possible errors.
 
 // Recover from failure with default value
 $recovered = $failure->recover(fn($e) => 'default'); // Success('default')
+// recover() always returns a successful Result, so the error type becomes never.
 
 // Chain fallback operations
 $result = fetchFromPrimaryDb()
@@ -74,6 +80,7 @@ $value = $result->getOrNull(); // T|null
 // Flatten nested Results
 $nested = Result::success(Result::success(42));
 $flat = $nested->flatten(); // Success(42)
+// Result<Result<int, string>, string> becomes Result<int, string>.
 
 // Monad comprehension with binding (avoids nested flatMap)
 $result = Result::binding(function () use ($orderId) {
@@ -84,17 +91,29 @@ $result = Result::binding(function () use ($orderId) {
     return $items;
 });
 // Returns Result<list<Item>, Throwable> - short-circuits on first failure
+// Every yielded value must be a Result; invalid yields throw ResultException.
+
+// Accumulate a list of Results into one, collecting all errors
+$result = Result::accumulate([
+    validateName($input['name']),
+    validateAge($input['age']),
+    validateEmail($input['email']),
+]);
+// All Success → Success([name, age, email])
+// Any Failure → Failure(['Name required', 'Invalid email']) (non-empty-list of errors)
 
 // Accumulate errors from multiple independent validations
 $result = Result::accumulate3(
-    fn() => validateName($input['name']),
-    fn() => validateAge($input['age']),
-    fn() => validateEmail($input['email']),
+    validateName($input['name']),
+    validateAge($input['age']),
+    validateEmail($input['email']),
     fn(string $name, int $age, string $email) => new User($name, $age, $email)
 );
 // All Success → Success(User(...))
 // Any Failure → Failure(['Name required', 'Invalid email']) (non-empty-list of errors)
 ```
+
+Use `accumulate($results)` for a homogeneous list of same-typed Results; use `accumulate2()`–`accumulate9()` to combine differently-typed Results into one value via a transform function.
 
 ## API
 
@@ -106,14 +125,15 @@ $result = Result::accumulate3(
 | `Result::failure($error)` | Create a Failure |
 | `Result::catch(callable $fn)` | Wrap exception-throwing code |
 | `Result::binding(callable $fn)` | Monad comprehension using generators |
-| `Result::accumulate2($fn1, ..., $transform)` | Combine 2 Results, collecting all errors |
-| `Result::accumulate3($fn1, ..., $transform)` | Combine 3 Results, collecting all errors |
-| `Result::accumulate4($fn1, ..., $transform)` | Combine 4 Results, collecting all errors |
-| `Result::accumulate5($fn1, ..., $transform)` | Combine 5 Results, collecting all errors |
-| `Result::accumulate6($fn1, ..., $transform)` | Combine 6 Results, collecting all errors |
-| `Result::accumulate7($fn1, ..., $transform)` | Combine 7 Results, collecting all errors |
-| `Result::accumulate8($fn1, ..., $transform)` | Combine 8 Results, collecting all errors |
-| `Result::accumulate9($fn1, ..., $transform)` | Combine 9 Results, collecting all errors |
+| `Result::accumulate($results)` | Convert a list of Results into one Result, collecting all errors |
+| `Result::accumulate2($r1, ..., $transform)` | Combine 2 Results, collecting all errors |
+| `Result::accumulate3($r1, ..., $transform)` | Combine 3 Results, collecting all errors |
+| `Result::accumulate4($r1, ..., $transform)` | Combine 4 Results, collecting all errors |
+| `Result::accumulate5($r1, ..., $transform)` | Combine 5 Results, collecting all errors |
+| `Result::accumulate6($r1, ..., $transform)` | Combine 6 Results, collecting all errors |
+| `Result::accumulate7($r1, ..., $transform)` | Combine 7 Results, collecting all errors |
+| `Result::accumulate8($r1, ..., $transform)` | Combine 8 Results, collecting all errors |
+| `Result::accumulate9($r1, ..., $transform)` | Combine 9 Results, collecting all errors |
 
 ### Instance Methods
 
@@ -134,7 +154,43 @@ $result = Result::accumulate3(
 | `tap($fn)` | Execute side effect on success value, return same Result |
 | `tapError($fn)` | Execute side effect on error value, return same Result |
 | `getOrNull()` | Get success value or null |
-| `flatten()` | Flatten nested `Result<Result<T, E>, E>` into `Result<T, E>` |
+| `flatten()` | Flatten nested `Result<Result<T, E1>, E2>` into `Result<T, E1\|E2>` |
+
+### Error Types in flatMap
+
+`flatMap()` preserves both the original error type and the error type returned by the callback:
+
+```php
+/** @var Result<string, ValidationError> $result */
+$saved = $result->flatMap(fn(string $value) => save($value));
+// If save() returns Result<User, DbError>, $saved is Result<User, ValidationError|DbError>.
+```
+
+Long chains can naturally produce wide error unions. When that becomes awkward, normalize errors with `mapError()` to a domain-specific error type at a boundary.
+
+### Recovering with Different Success Types
+
+`recover()` and `recoverWith()` can return a different success type than the original `Result`:
+
+```php
+/** @var Result<int, string> $result */
+$recovered = $result->recover(fn(string $error) => false);
+// Result<int|bool, never>
+```
+
+After `recover()`, the Result can no longer be a Failure. `recoverWith()` keeps the callback's error type because the fallback operation may still fail.
+
+### Flattening Nested Results
+
+`flatten()` preserves nested generic types. If the success value is another `Result`, the inner success type is used and the outer and inner error types are combined:
+
+```php
+/** @var Result<Result<int, DbError>, ValidationError> $result */
+$flat = $result->flatten();
+// Result<int, ValidationError|DbError>
+```
+
+Calling `flatten()` on a non-nested Result keeps the original type.
 
 ## PHPStan Integration
 
@@ -233,3 +289,6 @@ return match (true) {
 
 The custom rule in this library ensures exhaustiveness, so it's safe to ignore `match.unhandled` for Result types.
 
+**Limitations:**
+
+The custom rule tracks simple variables in `instanceof` match arms, such as `$result instanceof Success`. It intentionally does not check property fetches or method calls such as `$this->result instanceof Success` or `$this->getResult() instanceof Success`.
