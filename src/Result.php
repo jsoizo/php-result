@@ -607,6 +607,16 @@ abstract class Result
     abstract public function getOrNull(): mixed;
 
     /**
+     * Returns the error value, or null if this is a Success.
+     *
+     * Provides a convenient way to extract the error with null as the default.
+     * For Failure, returns the contained error. For Success, returns null.
+     *
+     * @return E|null The error value or null
+     */
+    abstract public function getErrorOrNull(): mixed;
+
+    /**
      * Flattens a nested Result into a single Result.
      *
      * If the success value is itself a Result, unwraps it and returns the inner Result.

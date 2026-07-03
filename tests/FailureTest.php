@@ -317,6 +317,27 @@ describe('Failure', function (): void {
         });
     });
 
+    describe('getErrorOrNull', function (): void {
+        it('returns error', function (): void {
+            $result = Result::failure('error message');
+
+            expect($result->getErrorOrNull())->toBe('error message');
+        });
+
+        it('returns exception error', function (): void {
+            $exception = new RuntimeException('oops');
+            $result = Result::failure($exception);
+
+            expect($result->getErrorOrNull())->toBe($exception);
+        });
+
+        it('returns null when error is null', function (): void {
+            $result = Result::failure(null);
+
+            expect($result->getErrorOrNull())->toBeNull();
+        });
+    });
+
     describe('flatten', function (): void {
         it('returns same Failure unchanged', function (): void {
             $result = Result::failure('error');

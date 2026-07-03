@@ -286,6 +286,20 @@ describe('Success', function (): void {
         });
     });
 
+    describe('getErrorOrNull', function (): void {
+        it('returns null', function (): void {
+            $result = Result::success(42);
+
+            expect($result->getErrorOrNull())->toBeNull();
+        });
+
+        it('returns null regardless of value type', function (): void {
+            $result = Result::success('hello');
+
+            expect($result->getErrorOrNull())->toBeNull();
+        });
+    });
+
     describe('flatten', function (): void {
         it('flattens nested Success', function (): void {
             $nested = Result::success(Result::success(42));

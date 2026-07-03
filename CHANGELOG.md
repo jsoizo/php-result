@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- `getErrorOrNull()` method for extracting error as nullable (symmetric with `getOrNull()`)
 - `Result::accumulate2()` through `Result::accumulate9()` for combining multiple Result instances with error accumulation
 - `Result::accumulate()` for converting a list of Results into one Result while collecting all errors; throws `ResultException` if any element is not a Result instance
 
