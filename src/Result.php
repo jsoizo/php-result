@@ -60,15 +60,25 @@ abstract class Result
      * returning a Success with the result if no exception is thrown,
      * or a Failure containing the caught Throwable otherwise.
      *
+     * Passing $exceptionClass captures only that class (and its subclasses)
+     * and narrows the error type accordingly; any other Throwable is rethrown.
+     *
      * @template TValue The return type of the callable
+     * @template TException of \Throwable = \Throwable The exception class to capture
      * @param callable(): TValue $fn The callable to execute
-     * @return Result<TValue, \Throwable> Success with the return value, or Failure with the exception
+     * @param class-string<TException> $exceptionClass The exception class to capture as a Failure
+     * @return Result<TValue, TException> Success with the return value, or Failure with the exception
+     * @throws \Throwable If the thrown exception is not an instance of $exceptionClass
      */
-    public static function catch(callable $fn): Result
+    public static function catch(callable $fn, string $exceptionClass = \Throwable::class): Result
     {
         try {
             return self::success($fn());
         } catch (\Throwable $e) {
+            if (!$e instanceof $exceptionClass) {
+                throw $e;
+            }
+
             return self::failure($e);
         }
     }

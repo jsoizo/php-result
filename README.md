@@ -47,6 +47,13 @@ $value = $failure->getOrElse(0); // 0
 // Catch exceptions
 $result = Result::catch(fn() => riskyOperation());
 
+// Catch only an expected exception class; anything else is rethrown
+$result = Result::catch(
+    fn() => json_decode($json, flags: JSON_THROW_ON_ERROR),
+    JsonException::class
+);
+// Result<mixed, JsonException> - a TypeError would propagate instead of becoming a Failure
+
 // Handle both cases with fold
 $message = $result->fold(
     onFailure: fn($error) => "Error: {$error->getMessage()}",
@@ -137,7 +144,7 @@ Use `accumulate($results)` for a homogeneous list of same-typed Results; use `ac
 |--------|-------------|
 | `Result::success($value)` | Create a Success |
 | `Result::failure($error)` | Create a Failure |
-| `Result::catch(callable $fn)` | Wrap exception-throwing code |
+| `Result::catch(callable $fn, string $exceptionClass = Throwable::class)` | Wrap exception-throwing code, optionally capturing only a given exception class |
 | `Result::binding(callable $fn)` | Monad comprehension using generators |
 | `Result::accumulate($results)` | Convert a list of Results into one Result, collecting all errors |
 | `Result::sequence($results)` | Convert a list of Results into one Result, stopping at the first error |
