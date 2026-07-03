@@ -100,6 +100,57 @@ describe('Result::catch', function (): void {
     });
 });
 
+describe('Result::fromNullable', function (): void {
+    it('returns Success for non-null value', function (): void {
+        $result = Result::fromNullable(42, fn () => 'missing');
+
+        expect($result)->toBeInstanceOf(Success::class);
+        expect($result->getOrElse(0))->toBe(42);
+    });
+
+    it('does not invoke onNull for non-null value', function (): void {
+        $calls = 0;
+        Result::fromNullable('value', function () use (&$calls): string {
+            $calls++;
+
+            return 'missing';
+        });
+
+        expect($calls)->toBe(0);
+    });
+
+    it('returns Failure with produced error for null', function (): void {
+        $result = Result::fromNullable(null, fn () => 'missing');
+
+        expect($result)->toBeInstanceOf(Failure::class);
+        expect($result->getErrorOrElse(''))->toBe('missing');
+    });
+
+    it('invokes onNull exactly once for null', function (): void {
+        $calls = 0;
+        Result::fromNullable(null, function () use (&$calls): string {
+            $calls++;
+
+            return 'missing';
+        });
+
+        expect($calls)->toBe(1);
+    });
+
+    it('treats falsy non-null values as Success', function (mixed $value): void {
+        $result = Result::fromNullable($value, fn () => 'missing');
+
+        expect($result)->toBeInstanceOf(Success::class);
+        expect($result->getOrElse('fallback'))->toBe($value);
+    })->with([
+        'empty string' => [''],
+        'zero int' => [0],
+        'zero float' => [0.0],
+        'false' => [false],
+        'empty array' => [[]],
+    ]);
+});
+
 describe('Result::fold', function (): void {
     it('applies onSuccess for Success', function (): void {
         $result = Result::success(42);

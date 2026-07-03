@@ -84,6 +84,29 @@ abstract class Result
     }
 
     /**
+     * Converts a nullable value into a Result.
+     *
+     * If the value is null, calls $onNull to produce the error and returns a
+     * Failure. Otherwise returns a Success with the value. Only null is treated
+     * as absence: falsy values such as '', 0, false and [] become Success.
+     * The error is produced lazily, so $onNull is never called on the non-null path.
+     *
+     * @template TValue The type of the non-null value
+     * @template TError The type of the error value
+     * @param TValue|null $value The nullable value to convert
+     * @param callable(): TError $onNull The function producing the error when the value is null
+     * @return Result<TValue, TError> Success with the value, or Failure with the produced error
+     */
+    public static function fromNullable(mixed $value, callable $onNull): Result
+    {
+        if ($value === null) {
+            return self::failure($onNull());
+        }
+
+        return self::success($value);
+    }
+
+    /**
      * Enables monad comprehension syntax using generators.
      *
      * This method allows chaining multiple Result-returning operations in an

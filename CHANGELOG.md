@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `getErrorOrNull()` method for extracting error as nullable (symmetric with `getOrNull()`)
 - `Result::sequence()` for converting a list of Results into one Result with fail-fast semantics, returning the first error unwrapped; throws `ResultException` if any element is not a Result instance
 - Optional `$exceptionClass` parameter for `Result::catch()` to capture only the given exception class (others are rethrown) and narrow the error type
+- `Result::fromNullable()` for converting nullable values into Results with a lazily produced error
 - `Result::accumulate2()` through `Result::accumulate9()` for combining multiple Result instances with error accumulation
 - `Result::accumulate()` for converting a list of Results into one Result while collecting all errors; throws `ResultException` if any element is not a Result instance
 
