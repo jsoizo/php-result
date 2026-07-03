@@ -57,6 +57,47 @@ describe('Result::catch', function (): void {
 
         expect($result)->toBeInstanceOf(Failure::class);
     });
+
+    it('returns Success on normal execution with exception class', function (): void {
+        $result = Result::catch(fn () => 42, RuntimeException::class);
+
+        expect($result)->toBeInstanceOf(Success::class);
+        expect($result->getOrElse(0))->toBe(42);
+    });
+
+    it('catches matching exception class and returns Failure', function (): void {
+        $exception = new RuntimeException('oops');
+        $result = Result::catch(fn () => throw $exception, RuntimeException::class);
+
+        expect($result)->toBeInstanceOf(Failure::class);
+        expect($result->getError())->toBe($exception);
+    });
+
+    it('catches subclass of the given exception class', function (): void {
+        $exception = new InvalidArgumentException('bad input');
+        $result = Result::catch(fn () => throw $exception, LogicException::class);
+
+        expect($result)->toBeInstanceOf(Failure::class);
+        expect($result->getError())->toBe($exception);
+    });
+
+    it('rethrows exception not matching the given class', function (): void {
+        Result::catch(fn () => throw new TypeError('bug'), RuntimeException::class);
+    })->throws(TypeError::class, 'bug');
+
+    it('rethrows the original exception instance', function (): void {
+        $exception = new LogicException('bug');
+
+        try {
+            Result::catch(fn () => throw $exception, RuntimeException::class);
+        } catch (LogicException $caught) {
+            expect($caught)->toBe($exception);
+
+            return;
+        }
+
+        $this->fail('Expected LogicException to be rethrown');
+    });
 });
 
 describe('Result::fold', function (): void {

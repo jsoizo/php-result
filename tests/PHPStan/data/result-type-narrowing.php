@@ -40,6 +40,13 @@ function testCatchInfersThrowableError(): void
     assertType('Jsoizo\Result\Result<int, Throwable>', $caught);
 }
 
+function testCatchWithExceptionClassNarrowsError(string $json): void
+{
+    $caught = Result::catch(fn (): mixed => json_decode($json, flags: JSON_THROW_ON_ERROR), \JsonException::class);
+
+    assertType('Jsoizo\Result\Result<mixed, JsonException>', $caught);
+}
+
 /**
  * @param Result<int, string> $result
  */
