@@ -65,3 +65,17 @@ jobs:
 
       - name: Run PHP 8.1 compatibility check
         run: composer compat
+
+  syntax-check:
+    runs-on: ubuntu-latest
+    name: PHP 8.1 Syntax Check
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+
+      - name: Run PHP 8.1 syntax check
+        run: find src -name '*.php' -print0 | xargs -0 -n1 -P4 php -l
