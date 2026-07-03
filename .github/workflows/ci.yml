@@ -17,7 +17,7 @@ jobs:
     name: PHP ${{ matrix.php }}
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -53,7 +53,7 @@ jobs:
     runs-on: ubuntu-latest
     name: PHP 8.1 Compatibility Check
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -70,7 +70,7 @@ jobs:
     runs-on: ubuntu-latest
     name: PHP 8.1 Syntax Check
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
